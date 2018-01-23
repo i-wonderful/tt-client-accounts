@@ -23,7 +23,7 @@ public class App {
     @RequestMapping("/")
     @ResponseBody
     String home() {
-        return "Hello!!! My Friend!!!";
+        return "Hello!!! My Friend!!! 123";
     }
 
     public static void main(String[] args) {
