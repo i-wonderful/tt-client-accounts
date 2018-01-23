@@ -5,7 +5,7 @@
     <groupId>test-task</groupId>
     <artifactId>accounts</artifactId>
     <version>1.0</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>tt-accounts</name>
 
@@ -25,13 +25,7 @@
     
     <dependencies>
         
-        <!--<dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <version>1.5.9.RELEASE</version>
-        </dependency>
-        -->
-        <!-- spring-boot-starter-web added Tomcat and Spring MVC -->
+        <!-- Starter for building web, including RESTful, applications using Spring MVC. Uses Tomcat as the default embedded container -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
