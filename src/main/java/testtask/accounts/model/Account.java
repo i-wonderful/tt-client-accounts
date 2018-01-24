@@ -22,24 +22,42 @@ public class Account {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    private BigDecimal amount;
+    private String name;
+    private BigDecimal balance;
+    private Currency currency;
 
     public Account(BigDecimal amount) {
-        this.amount = amount;
+        this.balance = amount;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
     /**
-     * @return the amount
+     * @return the balance
      */
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getBalance() {
+        return balance;
     }
 
     /**
-     * @param amount the amount to set
+     * @param balance the balance to set
      */
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
     
     

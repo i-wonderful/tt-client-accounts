@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,68 +24,51 @@ public class Client {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    private String name;
-    
-    private String surname;
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private Date birthday;
 
     @OneToMany
     private List<Account> accounts;
-    
-    public Client(String name, String surname) {
-        this.name = name;
-        this.surname = surname;
+
+    public String getFirstName() {
+        return firstName;
     }
 
-    public Client(String name, String surname, List<Account> accounts) {
-        this.name = name;
-        this.surname = surname;
-        this.accounts = accounts;
-    }
-    
-    
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+    public String getMiddleName() {
+        return middleName;
     }
 
-    /**
-     * @return the surname
-     */
-    public String getSurname() {
-        return surname;
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 
-    /**
-     * @param surname the surname to set
-     */
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public String getLastName() {
+        return lastName;
     }
 
-    /**
-     * @return the accounts
-     */
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
     public List<Account> getAccounts() {
         return accounts;
     }
 
-    /**
-     * @param accounts the accounts to set
-     */
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
-    
-    
-    
 }

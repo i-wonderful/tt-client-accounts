@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
  *
  */
 //@EnableAutoConfiguration
-//@ComponentScan(value = "testtask.accounts.rest")
+//@ComponentScan(value = "testtask.accounts.controller")
 @SpringBootApplication
 public class Application {
 
