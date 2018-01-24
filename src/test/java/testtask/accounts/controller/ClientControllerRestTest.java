@@ -28,4 +28,4 @@ public class ClientControllerRestTest {
 //                .andRespond(MockRestResponseCreators.withStatus(HttpStatus.NOT_FOUND));
 ////        Assert.assertTrue(true);
 //    }
-}
+    }

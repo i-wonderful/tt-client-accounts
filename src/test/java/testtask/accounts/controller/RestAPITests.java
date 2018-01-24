@@ -1,4 +1,3 @@
-
 package testtask.accounts.controller;
 
 import org.junit.Before;
@@ -12,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.CoreMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 /**
  *
@@ -25,18 +25,30 @@ public class RestAPITests {
     @Autowired
     private MockMvc mockMvc;
 
-//	@Autowired
-//	private VisitsRepository visitsRepository;
-    @Before
-    public void setUp() throws Exception {
-//		visitsRepository.deleteAll();
-    }
+
+//    @Before
+//    public void setUp() throws Exception {
+//    }
 
     @Test
     public void testGo() throws Exception {
         mockMvc.perform(get("/client/go"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("I'm client controller!")));
+    }
+
+    @Test
+    public void testAccountsAll() throws Exception {
+        mockMvc.perform(get("/accounts/all"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testClientGetById() throws Exception {
+        mockMvc.perform(get("/client/1"))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
 //	@Test

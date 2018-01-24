@@ -7,6 +7,6 @@ import testtask.accounts.model.Client;
 /**
  * Created by Alex Volobuev on 24.01.2018.
  */
-interface AccountRepository extends CrudRepository<Account, Long> {
+public interface AccountRepository extends CrudRepository<Account, Long> {
 
 }

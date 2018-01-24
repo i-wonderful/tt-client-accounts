@@ -8,10 +8,14 @@ package testtask.accounts.controller;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.websocket.server.PathParam;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
 
@@ -22,6 +26,13 @@ import testtask.accounts.model.Client;
 @RestController
 @RequestMapping(value = "/client")
 public class ClientController {
+
+    // тут будет сервис. да.
+    final ClientRepository clientRepository;
+
+    public ClientController(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
     @GetMapping(value = "/go")
     public String hello() {
@@ -41,5 +52,10 @@ public class ClientController {
         cl.setAccounts(accounts);
 
         return cl;
+    }
+
+    @GetMapping(value = "/{id}")
+    public Client get(@PathVariable Long id) {
+        return clientRepository.findOne(id);
     }
 }
