@@ -12,8 +12,8 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import testtask.accounts.dto.AccountDto;
-import testtask.accounts.dto.ClientDto;
+import testtask.accounts.model.Account;
+import testtask.accounts.model.Client;
 
 /**
  *
@@ -29,13 +29,13 @@ public class ClientController {
     }
 
     @GetMapping(value = "/current")
-    public ClientDto get() {
+    public Client get() {
 
-        List<AccountDto> accounts = new ArrayList<>();
-        accounts.add(new AccountDto(new BigDecimal(1233.44)));
-        accounts.add(new AccountDto(new BigDecimal(45566.55)));
+        List<Account> accounts = new ArrayList<>();
+        accounts.add(new Account(new BigDecimal(1233.44)));
+        accounts.add(new Account(new BigDecimal(45566.55)));
 
-        ClientDto cl = new ClientDto("Doooooo", "Goooo", accounts);
+        Client cl = new Client("John", "Doe", accounts);
 
         return cl;
     }

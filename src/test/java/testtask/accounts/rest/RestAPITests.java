@@ -1,20 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package tessttask.accounts.rest;
 
+package testtask.accounts.rest;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import org.springframework.test.web.servlet.result.ContentResultMatchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.CoreMatchers.*;
+import testtask.accounts.rest.ClientController;
 
 /**
  *
@@ -23,25 +24,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DemoApplicationTests {
+public class RestAPITests {
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
 //	@Autowired
 //	private VisitsRepository visitsRepository;
-
-	@Before
-	public void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 //		visitsRepository.deleteAll();
-	}
+    }
 
-	@Test
-	public void indexControllerShouldReturnHtmlPage() throws Exception {
-		mockMvc.perform( get("/client/go"))
-				.andExpect(status().isOk());
-//				.andExpect(content().string(containsString("Welcome to Spring")));
-	}
+    @Test
+    public void testGo() throws Exception {
+        mockMvc.perform(get("/client/go"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("I'm client controller!")));
+    }
 
 //	@Test
 //	public void apiControllerShouldReturnVisits() throws Exception {

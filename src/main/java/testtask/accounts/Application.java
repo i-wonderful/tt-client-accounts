@@ -8,8 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  *
  */
-@EnableAutoConfiguration
-@ComponentScan(value = "testtask.accounts.rest")
+//@EnableAutoConfiguration
+//@ComponentScan(value = "testtask.accounts.rest")
 @SpringBootApplication
 public class Application {
 
