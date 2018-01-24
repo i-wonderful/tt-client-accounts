@@ -35,7 +35,7 @@ public class ClientController {
         accounts.add(new AccountDto(new BigDecimal(1233.44)));
         accounts.add(new AccountDto(new BigDecimal(45566.55)));
 
-        ClientDto cl = new ClientDto("Doooooo", "Goooo", accounts);
+        ClientDto cl = new ClientDto("John", "Doe", accounts);
 
         return cl;
     }
