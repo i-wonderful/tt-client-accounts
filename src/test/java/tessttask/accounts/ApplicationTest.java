@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 
 //@RunWith
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ApplicationTest {
     
 //    @Before
