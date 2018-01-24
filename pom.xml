@@ -60,6 +60,11 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.196</version>
+        </dependency>
 <!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
