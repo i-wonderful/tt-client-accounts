@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package testtask.accounts.model;
+package testtask.accounts.dao;
+
+import testtask.accounts.model.Currency;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
