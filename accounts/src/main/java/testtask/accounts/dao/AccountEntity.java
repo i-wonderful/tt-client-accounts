@@ -17,19 +17,34 @@ import java.math.BigDecimal;
  *
  * @author Strannica
  */
+@SuppressWarnings("WeakerAccess")
 @Entity
-public class Account {
+public class AccountEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
+    private Long clientId;
     private String name;
     private BigDecimal balance;
     private Currency currency;
 
-    public Account(BigDecimal amount) {
-        this.balance = amount;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 
     public String getName() {

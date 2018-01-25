@@ -1,12 +1,12 @@
 package testtask.accounts.dao;
 
 import org.springframework.data.repository.CrudRepository;
-import testtask.accounts.model.Account;
-import testtask.accounts.model.Client;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
  */
-public interface AccountRepository extends CrudRepository<Account, Long> {
+@Repository
+public interface AccountRepository extends CrudRepository<AccountEntity, Long> {
 
 }

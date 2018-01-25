@@ -15,12 +15,18 @@ import java.math.BigDecimal;
 public class Account {
 
     private Long id;
+    private Long clientId;
     private String name;
     private BigDecimal balance;
     private Currency currency;
 
-    public Account(BigDecimal balance) {
-        this.balance = balance;
+
+    public Long getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 
     public Long getId() {
