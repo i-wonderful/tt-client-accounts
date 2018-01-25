@@ -2,6 +2,9 @@ package testtask.accounts.dao;
 
 import testtask.accounts.model.Account;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Alex Volobuev on 25.01.2018.
  */
@@ -24,6 +27,13 @@ public class AccountConvertor {
         accountEntity.setCurrency(account.getCurrency());
         accountEntity.setName(account.getName());
         return accountEntity;
+    }
+
+    public static List<Account> entityListToModels (Iterable<AccountEntity> accountEntityList) {
+        List<Account> accountList = new ArrayList<>();
+        accountEntityList.forEach(accountEntity ->
+                accountList.add(AccountConvertor.entityToModel(accountEntity)));
+        return accountList;
     }
 
 }
