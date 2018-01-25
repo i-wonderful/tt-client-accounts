@@ -31,12 +31,12 @@ public class RestAPITests {
 //    }
 
 
-    @Test
-    public void testAccountGo() throws Exception {
-        mockMvc.perform(get("/account/go"))
-                .andExpect(status().isOk());
-//                .andExpect(content().string(containsString("I'm client controller!")));
-    }
+//    @Test
+//    public void testAccountGo() throws Exception {
+//        mockMvc.perform(get("/account/go"))
+//                .andExpect(status().isOk());
+////                .andExpect(content().string(containsString("I'm client controller!")));
+//    }
 
     @Test
     public void testAccountsAll() throws Exception {
