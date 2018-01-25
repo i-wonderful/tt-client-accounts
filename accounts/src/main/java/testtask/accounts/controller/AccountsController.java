@@ -13,7 +13,7 @@ import testtask.accounts.service.AccountService;
 
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/account")
 public class AccountsController {
 
     private final AccountService accountService;
@@ -23,7 +23,7 @@ public class AccountsController {
         this.accountService = accountService;
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     public Iterable getAll() {
         return accountService.getAll();
     }

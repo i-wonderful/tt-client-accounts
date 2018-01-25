@@ -54,3 +54,5 @@ fabric.properties
 /common/target/
 /clients/target/
 /accounts/target/
+
+/accounts/nbactions.xml

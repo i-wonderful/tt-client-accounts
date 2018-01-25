@@ -30,26 +30,27 @@ public class RestAPITests {
 //    public void setUp() throws Exception {
 //    }
 
-    @Test
-    public void testGo() throws Exception {
-        mockMvc.perform(get("/client/go"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("I'm client controller!")));
-    }
+
+//    @Test
+//    public void testAccountGo() throws Exception {
+//        mockMvc.perform(get("/account/go"))
+//                .andExpect(status().isOk());
+////                .andExpect(content().string(containsString("I'm client controller!")));
+//    }
 
     @Test
     public void testAccountsAll() throws Exception {
-        mockMvc.perform(get("/accounts/all"))
+        mockMvc.perform(get("/account/all"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
-    @Test
-    public void testClientGetById() throws Exception {
-        mockMvc.perform(get("/client/1"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    public void testClientGetById() throws Exception {
+//        mockMvc.perform(get("/client/1"))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//    }
 
 //	@Test
 //	public void apiControllerShouldReturnVisits() throws Exception {

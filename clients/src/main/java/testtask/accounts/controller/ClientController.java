@@ -15,6 +15,7 @@ import testtask.accounts.model.Client;
 
 import java.util.ArrayList;
 import java.util.List;
+import testtask.accounts.dao.ClientConverter;
 
 /**
  *
@@ -53,6 +54,6 @@ public class ClientController {
 
     @GetMapping(value = "/{id}")
     public Client get(@PathVariable Long id) {
-        return clientRepository.findOne(id);
+        return ClientConverter.entityToModel(clientRepository.findOne(id));
     }
 }

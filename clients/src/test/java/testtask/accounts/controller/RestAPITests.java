@@ -37,12 +37,12 @@ public class RestAPITests {
                 .andExpect(content().string(containsString("I'm client controller!")));
     }
 
-    @Test
-    public void testAccountsAll() throws Exception {
-        mockMvc.perform(get("/accounts/all"))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
+//    @Test
+//    public void testAccountsAll() throws Exception {
+//        mockMvc.perform(get("/accounts/all"))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//    }
 
     @Test
     public void testClientGetById() throws Exception {
