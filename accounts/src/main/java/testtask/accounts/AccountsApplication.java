@@ -13,13 +13,13 @@ import org.springframework.web.client.RestTemplate;
  *
  */
 @SpringBootApplication
-public class Application {
+public class AccountsApplication {
 
-    final Logger logger = LoggerFactory.getLogger(Application.class);
+    final Logger logger = LoggerFactory.getLogger(AccountsApplication.class);
     
     public static void main(String[] args) {
 
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(AccountsApplication.class, args);
     }
 
     @Bean
