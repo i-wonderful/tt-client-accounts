@@ -51,6 +51,10 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+/common/target/
+/clients/target/
+/accounts/target/
+
 /accounts/nbactions.xml
 /common/target/
 /common/nbproject/

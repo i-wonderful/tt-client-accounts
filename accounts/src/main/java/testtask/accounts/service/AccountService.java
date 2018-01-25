@@ -7,7 +7,6 @@ import testtask.accounts.dao.AccountEntity;
 import testtask.accounts.dao.AccountRepository;
 import testtask.accounts.model.Account;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,32 +22,39 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public Account create (Account account) {
-        account = AccountConvertor.entityToModel(
-                accountRepository.save(
-                        AccountConvertor.modelToEntity(account)
-                )
-        );
+    public Account create(Account account) {
+        AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
+        accountEntity = accountRepository.save(accountEntity);
+        account = AccountConvertor.entityToModel(accountEntity);
         return account;
     }
 
-//    public Account read (Long id) {
-//        return account;
-//    }
+    public Account get(Long id) {
+        AccountEntity accountEntity = accountRepository.findOne(id);
+        Account account = AccountConvertor.entityToModel(accountEntity);
+        return account;
+    }
 
-//    public void update (Account account) {
-//        return;
-//    }
+    public void update(Account account) {
+        AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
+        accountRepository.save(accountEntity);
+    }
 
-//    public void delete (Account account) {
-//        return;
-//    }
+    public void delete(Account account) {
+        AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
+        accountRepository.delete(accountEntity);
+    }
 
-        public List<Account> getAll () {
-        List<Account> allAccounts = new ArrayList<>();
-        Iterable<AccountEntity> allAccountEntities = accountRepository.findAll();
-        allAccountEntities.forEach(accountEntity -> allAccounts.add(AccountConvertor.entityToModel(accountEntity)));
-        return allAccounts;
+    public List<Account> getAll() {
+        Iterable<AccountEntity> accountEntities = accountRepository.findAll();
+        List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
+        return accounts;
+    }
+
+    public List<Account> findByClientId(Long clientId) {
+        Iterable<AccountEntity> accountEntities = accountRepository.findByClientId(clientId);
+        List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
+        return accounts;
     }
 
 }
