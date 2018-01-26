@@ -26,7 +26,7 @@ public class AccountsController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public Iterable getAll() {
         return accountService.getAll();
     }

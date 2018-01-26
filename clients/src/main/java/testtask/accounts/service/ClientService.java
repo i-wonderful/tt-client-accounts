@@ -1,6 +1,5 @@
 package testtask.accounts.service;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -8,6 +7,8 @@ import testtask.accounts.dao.ClientConverter;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.model.Account;
+
+import java.util.List;
 import testtask.accounts.model.Client;
 
 /**
@@ -55,7 +56,7 @@ public class ClientService {
     public List<Account> getAccounts(Long clientId) {
 
         // todo for tests
-        List<Account> accounts = restTemplate.getForObject(URL_ACCOUNTS + "/all", List.class);
+        List<Account> accounts = restTemplate.getForObject(URL_ACCOUNTS , List.class);
         return accounts;
     }
 
