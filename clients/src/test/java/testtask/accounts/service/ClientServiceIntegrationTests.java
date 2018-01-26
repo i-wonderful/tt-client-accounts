@@ -4,7 +4,6 @@ import java.util.Date;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ import testtask.accounts.model.Client;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ClientsApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@TestPropertySource(locations = "classpath:application.properties")//-integrationtest
+@TestPropertySource(locations = "classpath:application.properties")
 public class ClientServiceIntegrationTests {
 
     @Autowired
@@ -47,8 +46,9 @@ public class ClientServiceIntegrationTests {
 
     @After
     public void clear() {
-        if(repository.exists(entity.getId()))
-        repository.delete(entity.getId());
+        if (repository.exists(entity.getId())) {
+            repository.delete(entity.getId());
+        }
     }
 
     @Test
@@ -62,31 +62,43 @@ public class ClientServiceIntegrationTests {
 
     @Test
     public void testFind() {
-        Client find = service.findOne(entity.getId());
+        Client find = service.findOne(entityModel.getId());
         assertNotNull(find);
         assertEquals(entityModel.getFirstName(), find.getFirstName());
         assertEquals(entityModel.getLastName(), find.getLastName());
     }
 
     @Test
-    public void testSave() {
+    public void testCreate() {
         Client clientNew = new Client();
         clientNew.setFirstName("Max");
         clientNew.setMiddleName("Mad");
         clientNew.setBirthday(new Date());
 
-        clientNew = service.create(clientNew);
+        clientNew = service.save(clientNew);
         assertNotNull(clientNew.getId());
 
         Client clientFromDb = ClientConverter.entityToModel(repository.findOne(clientNew.getId()));
         assertEquals(clientNew.getFirstName(), clientFromDb.getFirstName());
         assertEquals(clientNew.getMiddleName(), clientFromDb.getMiddleName());
     }
-    
+
     @Test
-    public void testDelete(){
-        service.delete(entity.getId());
+    public void testUpdate() {
+        final String newMiddleName = "Daredevil";
+        entityModel.setMiddleName(newMiddleName);
+        service.save(entityModel);
         
-        assertFalse(repository.exists(entity.getId()));
+        Client clientFromDb = ClientConverter.entityToModel( repository.findOne(entityModel.getId()));
+        assertEquals(newMiddleName, clientFromDb.getMiddleName());
     }
+
+    @Test
+    public void testDelete() {
+        service.delete(entityModel.getId());
+
+        assertFalse(repository.exists(entityModel.getId()));
+        
+    }
+
 }
