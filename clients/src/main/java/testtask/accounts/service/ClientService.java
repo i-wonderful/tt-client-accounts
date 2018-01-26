@@ -1,10 +1,11 @@
 package testtask.accounts.service;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import testtask.accounts.model.Account;
+
+import java.util.List;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
@@ -32,7 +33,7 @@ public class ClientService {
     public List<Account> getAccounts(Long clientId) {
 
         // todo for tests
-        List<Account> accounts = restTemplate.getForObject(URL_ACCOUNTS + "/all", List.class);
+        List<Account> accounts = restTemplate.getForObject(URL_ACCOUNTS , List.class);
         return accounts;
     }
 }
