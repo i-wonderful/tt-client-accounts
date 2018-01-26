@@ -27,6 +27,7 @@
         <module>accounts</module>
         <module>clients</module>
         <module>common</module>
+        <module>testing</module>
     </modules>
     
     <dependencies>
@@ -75,6 +76,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>exec</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
