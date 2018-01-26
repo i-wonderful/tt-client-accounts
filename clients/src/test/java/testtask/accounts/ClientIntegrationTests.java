@@ -44,15 +44,6 @@ public class ClientIntegrationTests {
         entity = repo.save(entity);
     }
 
-
-    @Test
-    public void getClientFromDb() {
-
-        ClientEntity find = repo.findOne(entity.getId());
-        assertNotNull(find);
-        assertEquals(find.getFirstName(), entity.getFirstName());
-        assertEquals(find.getLastName(), entity.getLastName());
-    }
     
     @Test
     public void getClientFromRest() throws Exception {
@@ -63,4 +54,8 @@ public class ClientIntegrationTests {
                 .andExpect(jsonPath("firstName", CoreMatchers.is(entity.getFirstName())));
     }
 
+//    @Test
+//    public void saveClientTest() {
+//    
+//    }
 }

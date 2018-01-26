@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.CoreMatchers.*;
+import org.junit.Ignore;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 /**
@@ -31,6 +32,7 @@ public class RestAPITests {
 //    }
 
     @Test
+    @Ignore
     public void testGo() throws Exception {
         mockMvc.perform(get("/client/go"))
                 .andExpect(status().isOk())
@@ -45,6 +47,7 @@ public class RestAPITests {
 //    }
 
     @Test
+    @Ignore
     public void testClientGetById() throws Exception {
         mockMvc.perform(get("/client/1"))
                 .andDo(print())

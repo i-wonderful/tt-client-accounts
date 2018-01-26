@@ -4,7 +4,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import testtask.accounts.dao.ClientConverter;
+import testtask.accounts.dao.ClientEntity;
+import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.model.Account;
+import testtask.accounts.model.Client;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
@@ -13,16 +17,35 @@ import testtask.accounts.model.Account;
 public class ClientService {
 
     private static final String URL_ACCOUNTS = "http://localhost:8081/accounts";
-    
+
     @Autowired
     private RestTemplate restTemplate;
 
-    public String testRestClient() {
-        return restTemplate.getForObject(URL_ACCOUNTS + "/go", String.class);
+    @Autowired
+    private ClientRepository repository;
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public Client findOne(Long id) {
+        return ClientConverter.entityToModel(repository.findOne(id));
     }
 
-    
-   
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public Client findWithAccounts(Long id) {
+
+        Client client = findOne(id);
+        List<Account> accounts = getAccounts(id);
+        client.setAccounts(accounts);
+        return client;
+    }
+
     /**
      * Get from REST api
      *
@@ -34,5 +57,35 @@ public class ClientService {
         // todo for tests
         List<Account> accounts = restTemplate.getForObject(URL_ACCOUNTS + "/all", List.class);
         return accounts;
+    }
+
+    /**
+     * Create new item
+     *
+     * @param client
+     * @return
+     */
+    public Client create(Client client) {
+        return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
+    }
+
+    /**
+     * 
+     * @param client
+     * @return 
+     */
+    public Client update(Client client) {
+        ClientEntity e = repository.findOne(client.getId());
+//        e.set
+        return ClientConverter.entityToModel(repository.save(e));
+    }
+    
+    /**
+     * 
+     * @param id 
+     */
+    public void delete(Long id) {
+        // todo delete accounts
+        repository.delete(id);
     }
 }
