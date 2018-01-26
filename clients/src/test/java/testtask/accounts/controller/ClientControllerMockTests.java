@@ -63,7 +63,7 @@ public class ClientControllerMockTests {
         final Client client = new Client();
         client.setFirstName("Stephen");
         client.setLastName("Hawking");
-        client.setId(new Long(1));
+        client.setId(1L);
         BDDMockito.given(clientService.findOne(new Long(1))).willReturn(client);
 
         // when
