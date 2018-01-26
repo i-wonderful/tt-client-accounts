@@ -13,8 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -42,7 +40,7 @@ public class ClientIntegrationTests {
     public void init() {
         entity = new ClientEntity();
         entity.setFirstName("Arnold");
-        entity.setLastName("Shvartsneger");
+        entity.setLastName("Schwarzenegger");
         entity.setMiddleName("123");
         entity = repo.save(entity);
     }

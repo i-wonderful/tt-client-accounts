@@ -52,7 +52,7 @@ public class AccountsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id) {
+    public ResponseEntity delete(@PathVariable Long id) {
         accountService.delete(accountService.get(id));
         return new ResponseEntity(HttpStatus.OK);
     }
