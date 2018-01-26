@@ -2,7 +2,6 @@
 package testtask.accounts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,15 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.DefaultResponseCreator.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import testtask.accounts.model.Client;
 import testtask.accounts.service.ClientService;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  *
@@ -63,18 +61,18 @@ public class ClientControllerMockTests {
         final Client client = new Client();
         client.setFirstName("Stephen");
         client.setLastName("Hawking");
-        client.setId(new Long(1));
-        BDDMockito.given(clientService.findOne(new Long(1))).willReturn(client);
+        client.setId(1L);
+        BDDMockito.given(clientService.findOne(1L)).willReturn(client);
 
         // when
-        MockHttpServletResponse responce = mockMvc.perform(get("/client/1"))
+        MockHttpServletResponse response = mockMvc.perform(get("/client/1"))
                 .andDo(print())
                 .andReturn().getResponse();
 
         // then
-        assertThat(responce.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(responce.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        assertThat(responce.getContentAsString()).isEqualTo(jacksonTester.write(client).getJson());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        assertThat(response.getContentAsString()).isEqualTo(jacksonTester.write(client).getJson());
 
     }
 }
