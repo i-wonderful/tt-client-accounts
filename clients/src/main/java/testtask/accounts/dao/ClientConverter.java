@@ -39,7 +39,7 @@ public class ClientConverter {
         client.setBirthday(clientEntity.getBirthday());
         client.setFirstName(clientEntity.getFirstName());
         client.setLastName(clientEntity.getLastName());
-        client.setMiddleName(clientEntity.getLastName());
+        client.setMiddleName(clientEntity.getMiddleName());
         
         return client;
     }
