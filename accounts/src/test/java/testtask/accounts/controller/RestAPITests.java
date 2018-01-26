@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.CoreMatchers.*;
+import org.junit.Ignore;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
 /**
@@ -40,7 +41,7 @@ public class RestAPITests {
 
     @Test
     public void testAccountsAll() throws Exception {
-        mockMvc.perform(get("/account/all"))
+        mockMvc.perform(get("/accounts/all"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

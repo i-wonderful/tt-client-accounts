@@ -12,7 +12,7 @@ import testtask.accounts.model.Account;
 @Service
 public class ClientService {
 
-    private static final String URL_ACCOUNTS = "http://localhost:8081/account";
+    private static final String URL_ACCOUNTS = "http://localhost:8081/accounts";
     
     @Autowired
     private RestTemplate restTemplate;
