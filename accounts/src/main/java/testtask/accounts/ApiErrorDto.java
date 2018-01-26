@@ -5,13 +5,13 @@ import org.springframework.http.HttpStatus;
 /**
  * Created by Alex Volobuev on 26.01.2018.
  */
-public class ApiError {
+public class ApiErrorDto {
 
     private HttpStatus status;
     private String message;
     private String errType;
 
-    public ApiError(AccountException e) {
+    public ApiErrorDto(AccountException e) {
         AccountException.ErrorTypes type = e.getType();
         switch (type) {
             case business:
