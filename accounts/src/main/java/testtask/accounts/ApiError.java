@@ -1,0 +1,57 @@
+package testtask.accounts;
+
+import org.springframework.http.HttpStatus;
+
+/**
+ * Created by Alex Volobuev on 26.01.2018.
+ */
+public class ApiError {
+
+    private HttpStatus status;
+    private String message;
+    private String errType;
+
+    public ApiError(AccountException e) {
+        AccountException.ErrorTypes type = e.getType();
+        switch (type) {
+            case business:
+                status = HttpStatus.CONFLICT;
+                break;
+            case validation:
+                status = HttpStatus.NOT_ACCEPTABLE;
+                break;
+            case not_found:
+                status = HttpStatus.NOT_FOUND;
+                break;
+            case other:
+                status = HttpStatus.BAD_REQUEST;
+                break;
+        }
+        this.message = e.getInfo();
+        this.errType = type.name();
+    }
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getErrType() {
+        return errType;
+    }
+
+    public void setErrType(String errType) {
+        this.errType = errType;
+    }
+}
