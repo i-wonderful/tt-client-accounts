@@ -61,12 +61,12 @@ public class ClientService {
     }
 
     /**
-     * Create new item
+     * Save or Update item
      *
      * @param client
      * @return
      */
-    public Client create(Client client) {
+    public Client save(Client client) {
         return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
 
@@ -75,11 +75,11 @@ public class ClientService {
      * @param client
      * @return 
      */
-    public Client update(Client client) {
-        ClientEntity e = repository.findOne(client.getId());
-//        e.set
-        return ClientConverter.entityToModel(repository.save(e));
-    }
+//    public Client update(Client client) {
+//        ClientEntity e = repository.findOne(client.getId());
+////        e.set
+//        return ClientConverter.entityToModel(repository.save(e));
+//    }
     
     /**
      * 

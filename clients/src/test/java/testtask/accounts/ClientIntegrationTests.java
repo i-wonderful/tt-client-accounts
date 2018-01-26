@@ -13,6 +13,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Ignore;
+import org.springframework.http.MediaType;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import testtask.accounts.model.Client;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,11 +34,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {ClientsApplication.class})
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
+@Deprecated
 public class ClientIntegrationTests {
 
     @Autowired
     private MockMvc mockMvc;
     
+    // Mock Service?
+
+
+
     @Autowired
     private ClientRepository repo;
 
@@ -47,16 +60,26 @@ public class ClientIntegrationTests {
 
     
     @Test
+    @Ignore
     public void getClientFromRest() throws Exception {
     
         mockMvc.perform(get("/client/" + entity.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("firstName", CoreMatchers.is(entity.getFirstName())));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("firstName", CoreMatchers.is(entity.getFirstName())))
+                .andExpect(jsonPath("lastName", CoreMatchers.is(entity.getLastName())));
     }
 
-//    @Test
-//    public void saveClientTest() {
-//    
-//    }
+    @Test
+    public void saveClientTest() throws Exception {
+
+        Client client = new Client();
+        client.setFirstName("");
+
+        mockMvc.perform(post("/client/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"firstName\": \"Arthur\"}"))
+                .andExpect(status().isOk());
+    }
 }
