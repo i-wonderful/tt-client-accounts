@@ -31,8 +31,7 @@ public class ClientController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<Client> get(@PathVariable Long id) {
         Client client = clientService.findOne(id);
-        HttpStatus status = (client != null) ? HttpStatus.OK : HttpStatus.NO_CONTENT;
-        return new ResponseEntity<>(client, status);
+        return new ResponseEntity<>(client, HttpStatus.OK);
     }
 
     @GetMapping(value = "/withAccounts/{id}")

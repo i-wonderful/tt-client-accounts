@@ -17,13 +17,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import testtask.accounts.model.Client;
 import testtask.accounts.service.ClientService;
+import testtask.accounts.exception.ApiErrorDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
-//import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import testtask.accounts.exception.ClientExceptionHandler;
+import testtask.accounts.exception.ClientException;
+import testtask.accounts.exception.MicroserviceException;
 
 /**
  *
@@ -41,23 +43,44 @@ public class ClientControllerMockTests {
     private ClientController controller;
 
     private JacksonTester<Client> jacksonTester;
-
+    private JacksonTester<ApiErrorDto> testerErrorJson;
+    
     @Before
     public void init() {
         // initialize jacksonTester
         JacksonTester.initFields(this, new ObjectMapper());
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new ClientExceptionHandler()) // Init Exception Handler
+                .build();
+       
     }
 
+    /**
+     * Test thrown error json then client not found.
+     */
     @Test
-    public void testNotFound() throws Exception {
-        mockMvc.perform(get("/client/46456435"))
+    public void findNotExistedClient() throws Exception {
+        
+        // given
+        final long notExistedClientId = 435435446L;
+        BDDMockito.given(clientService.findOne(notExistedClientId))
+                .willThrow(new ClientException(notExistedClientId, MicroserviceException.ErrorTypes.not_found));
+        
+        // when
+        MockHttpServletResponse response = mockMvc.perform(get("/client/" + notExistedClientId))
                 .andDo(print())
-                .andExpect(status().isNoContent());
+                .andReturn().getResponse();
+        
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        ApiErrorDto errorDto = testerErrorJson.parseObject(response.getContentAsString());
+        assertThat(errorDto.getErrType()).isEqualTo(MicroserviceException.ErrorTypes.not_found.name());
+        assertThat(errorDto.getMessage()).isEqualTo(ClientException.getStandartInfo(MicroserviceException.ErrorTypes.not_found, notExistedClientId));
     }
 
     @Test
-    public void testFindById() throws Exception {
+    public void findExistedClientById() throws Exception {
 
         // given
         final Client client = new Client();
@@ -125,8 +148,6 @@ public class ClientControllerMockTests {
 
     @Test
     public void canDeleteClient() throws Exception {
-        // given
-        //BDDMockito.given(clientService.delete(1L));
 
         // when
         MockHttpServletResponse responce = mockMvc.perform(delete("/client/1"))
