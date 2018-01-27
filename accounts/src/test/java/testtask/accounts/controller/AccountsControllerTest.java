@@ -107,6 +107,7 @@ public class AccountsControllerTest {
     public void getErrorDtoWhenRequestNotExistingAccount() throws Exception {
         MockHttpServletResponse response = mockMvc
                 .perform(get("/accounts/123"))
+                .andDo(print())
                 .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());

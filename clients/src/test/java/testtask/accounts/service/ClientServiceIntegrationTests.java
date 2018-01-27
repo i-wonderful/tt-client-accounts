@@ -75,7 +75,7 @@ public class ClientServiceIntegrationTests {
         clientNew.setMiddleName("Mad");
         clientNew.setBirthday(new Date());
 
-        clientNew = service.save(clientNew);
+        clientNew = service.create(clientNew);
         assertNotNull(clientNew.getId());
 
         Client clientFromDb = ClientConverter.entityToModel(repository.findOne(clientNew.getId()));
@@ -87,7 +87,7 @@ public class ClientServiceIntegrationTests {
     public void testUpdate() {
         final String newMiddleName = "Daredevil";
         entityModel.setMiddleName(newMiddleName);
-        service.save(entityModel);
+        service.create(entityModel);
         
         Client clientFromDb = ClientConverter.entityToModel( repository.findOne(entityModel.getId()));
         assertEquals(newMiddleName, clientFromDb.getMiddleName());

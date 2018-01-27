@@ -56,7 +56,7 @@ public class ClientService {
     public List<Account> getAccounts(Long clientId) {
 
         // todo for tests
-        List<Account> accounts = restTemplate.getForObject(URL_ACCOUNTS , List.class);
+        List<Account> accounts = restTemplate.getForObject(URL_ACCOUNTS, List.class);
         return accounts;
     }
 
@@ -66,24 +66,25 @@ public class ClientService {
      * @param client
      * @return
      */
-    public Client save(Client client) {
+    public Client create(Client client) {
+        // todo add exception
         return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
 
     /**
-     * 
+     *
      * @param client
-     * @return 
+     * @return
      */
-//    public Client update(Client client) {
-//        ClientEntity e = repository.findOne(client.getId());
-////        e.set
-//        return ClientConverter.entityToModel(repository.save(e));
-//    }
-    
+    public Client update(Client client) {
+        // todo add exception
+        ClientEntity e = repository.findOne(client.getId());
+        return ClientConverter.entityToModel(repository.save(e));
+    }
+
     /**
-     * 
-     * @param id 
+     *
+     * @param id
      */
     public void delete(Long id) {
         // todo delete accounts

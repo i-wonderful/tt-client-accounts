@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package testtask.accounts.model;
 
 
@@ -24,6 +20,14 @@ public class Client {
     private Date birthday;
     private List<Account> accounts;
 
+    public Client() {
+    }
+
+    
+    public Client(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     public Long getId() {
         return id;
@@ -72,4 +76,14 @@ public class Client {
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
+
+//    @Override
+//    public boolean equals(Object obj) {
+//    
+//        if(obj instanceof Client == false)
+//            return false;
+//        ((Client) obj).getId() 
+//    }
+    
+    
 }

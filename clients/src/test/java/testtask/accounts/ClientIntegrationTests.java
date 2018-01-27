@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 @Deprecated
+@Ignore
 public class ClientIntegrationTests {
 
     @Autowired
