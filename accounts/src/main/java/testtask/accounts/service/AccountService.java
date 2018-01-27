@@ -2,6 +2,7 @@ package testtask.accounts.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import testtask.accounts.AccountException;
 import testtask.accounts.dao.AccountConvertor;
 import testtask.accounts.dao.AccountEntity;
 import testtask.accounts.dao.AccountRepository;
@@ -29,9 +30,14 @@ public class AccountService {
         return account;
     }
 
+    //TODO transactions if necessary
     public Account get(Long id) {
         AccountEntity accountEntity = accountRepository.findOne(id);
+        if (accountEntity == null) {
+            throw new AccountException(AccountException.ErrorTypes.not_found ,"Account with id: " + id + " not found");
+        }
         Account account = AccountConvertor.entityToModel(accountEntity);
+        //TODO logging
         return account;
     }
 

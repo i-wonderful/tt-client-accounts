@@ -1,31 +1,27 @@
 package testtask.accounts;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.ByteBuffer;
-import org.apache.catalina.connector.OutputBuffer;
-import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Ignore;
-import org.springframework.http.MediaType;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import testtask.accounts.model.Client;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  *
@@ -41,10 +37,10 @@ public class ClientIntegrationTests {
     @Autowired
     private MockMvc mockMvc;
     
-    // Mock Service? 
-    
-    
-    
+    // Mock Service?
+
+
+
     @Autowired
     private ClientRepository repo;
 
@@ -54,7 +50,7 @@ public class ClientIntegrationTests {
     public void init() {
         entity = new ClientEntity();
         entity.setFirstName("Arnold");
-        entity.setLastName("Shvartsneger");
+        entity.setLastName("Schwarzenegger");
         entity.setMiddleName("123");
         entity = repo.save(entity);
     }
@@ -74,10 +70,10 @@ public class ClientIntegrationTests {
 
     @Test
     public void saveClientTest() throws Exception {
-    
+
         Client client = new Client();
         client.setFirstName("");
-      
+
         mockMvc.perform(post("/client/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"firstName\": \"Arthur\"}"))

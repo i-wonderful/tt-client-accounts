@@ -31,17 +31,22 @@ public class AccountsController {
         return accountService.getAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Account> get(@PathVariable("id") Long id) {
+        Account account = accountService.get(id);
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
+    @GetMapping("/ClientId/{id}")
+    public Iterable<Account> getByClientId(@PathVariable("id") Long clientId) {
+        return accountService.findByClientId(clientId);
+    }
+
     @PostMapping()
     public ResponseEntity<Account> create(@RequestBody Account account) {
         account = accountService.create(account);
         return new ResponseEntity<>(account, HttpStatus.OK);
 
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Account> get(@PathVariable("id") Long id) {
-        Account account = accountService.get(id);
-        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -52,7 +57,7 @@ public class AccountsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id) {
+    public ResponseEntity delete(@PathVariable Long id) {
         accountService.delete(accountService.get(id));
         return new ResponseEntity(HttpStatus.OK);
     }

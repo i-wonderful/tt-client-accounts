@@ -16,6 +16,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import testtask.accounts.AccountException;
+import testtask.accounts.ApiErrorDto;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Currency;
 import testtask.accounts.service.AccountService;
@@ -43,6 +45,7 @@ public class AccountsControllerTest {
     private MockMvc mockMvc;
 
     private JacksonTester<Account> jacksonTester;
+    private JacksonTester<ApiErrorDto> jacksonErrorTester;
 
     private Account account;
 
@@ -52,7 +55,7 @@ public class AccountsControllerTest {
     @Before
     public void init() {
         // initialize jacksonTester
-       JacksonTester.initFields(this, AccountsApplication.serializingObjectMapper());
+        JacksonTester.initFields(this, AccountsApplication.serializingObjectMapper());
 //        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 
         initAccountSalary();
@@ -98,7 +101,21 @@ public class AccountsControllerTest {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
         assertThat(response.getContentAsString()).isEqualTo(jacksonTester.write(account).getJson());
+    }
 
+    @Test
+    public void getErrorDtoWhenRequestNotExistingAccount() throws Exception {
+        MockHttpServletResponse response = mockMvc
+                .perform(get("/accounts/123"))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        AccountException exception = new AccountException(AccountException.ErrorTypes.not_found,
+                "Account with id: " +
+                "123 not found");
+        ApiErrorDto errorDto = new ApiErrorDto(exception);
+        assertThat(response.getContentAsString()).isEqualTo(jacksonErrorTester.write(errorDto).getJson());
     }
 
     @Test
