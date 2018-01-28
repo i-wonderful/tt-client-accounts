@@ -20,10 +20,14 @@ import java.util.List;
 @Service
 public class ClientService {
 
-    @Value("${server.port}")
-    private static String serverPort;
+    @Value("${acc-mks.server.port}")
+    private String PORT;
 
-    private static final String URL_ACCOUNTS = "http://localhost:" + serverPort + "/accounts";
+    @Value("${acc-mks.host}")
+    private String URL_HOST;
+
+    @Value("${acc-mks.base.url}")
+    private String URL_ACCOUNTS;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -46,29 +50,25 @@ public class ClientService {
     }
 
     /**
-     *
+     * Find Client with accounts.
+     * 
      * @param id
      * @return
      */
     public Client findWithAccounts(Long id) {
 
+        if(id == null)
+            throw new ClientException(MicroserviceException.ErrorTypes.validation, "Client Id must be not null.");
+        
+        
         Client client = findOne(id);
-        List<Account> accounts = getAccounts(id);
+        String path = URL_HOST + ":" + PORT + URL_ACCOUNTS + "/ClientId/" + id;
+
+        System.out.println(">> Get Client with Accounts by url " + path);
+
+        List<Account> accounts = restTemplate.getForObject(path, List.class);
         client.setAccounts(accounts);
         return client;
-    }
-
-    /**
-     * Get from REST api
-     *
-     * @param clientId
-     * @return
-     */
-    public List<Account> getAccounts(Long clientId) {
-
-        // todo for tests
-        List<Account> accounts = restTemplate.getForObject(URL_ACCOUNTS, List.class);
-        return accounts;
     }
 
     /**
@@ -86,7 +86,7 @@ public class ClientService {
 
     /**
      * Update Client.
-     * 
+     *
      * @param id
      * @param client
      * @return

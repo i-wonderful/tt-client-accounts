@@ -26,6 +26,7 @@ import testtask.accounts.service.ClientService;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         classes = {AccountsApplication.class, ClientsApplication.class})
+@Deprecated
 public class MicroservicesTests {
 
     @Autowired
@@ -45,15 +46,15 @@ public class MicroservicesTests {
 //        System.out.println(answer);
 //        Assert.assertNotNull(answer);
 //    }
-    @Test
+//    @Test
 //    @Ignore
-    public void testRestGetAccounts() {
-        List<Account> accounts = clientService.getAccounts(new Long(1));
-
-        // todo
-        System.out.println(accounts);
-
-        Assert.assertNotNull(accounts);
-    }
+//    public void testRestGetAccounts() {
+//        List<Account> accounts = clientService.getAccounts(new Long(1));
+//
+//        // todo
+//        System.out.println(accounts);
+//
+//        Assert.assertNotNull(accounts);
+//    }
 
 }

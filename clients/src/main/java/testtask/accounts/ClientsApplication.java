@@ -18,6 +18,6 @@ public class ClientsApplication {
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
+        return builder.basicAuthorization("user", "123").build();
     }
 }
