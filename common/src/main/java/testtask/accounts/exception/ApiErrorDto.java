@@ -1,4 +1,4 @@
-package testtask.accounts;
+package testtask.accounts.exception;
 
 import org.springframework.http.HttpStatus;
 
@@ -11,13 +11,12 @@ public class ApiErrorDto {
     private String message;
     private String errType;
 
-    public ApiErrorDto(HttpStatus status, String message) {
-        this.status = status;
-        this.message = message;
+    public ApiErrorDto() {
     }
 
-    public ApiErrorDto(AccountException e) {
-        AccountException.ErrorTypes type = e.getType();
+    
+    public ApiErrorDto(MicroserviceException e) {
+        MicroserviceException.ErrorTypes type = e.getType();
         switch (type) {
             case business:
                 status = HttpStatus.CONFLICT;

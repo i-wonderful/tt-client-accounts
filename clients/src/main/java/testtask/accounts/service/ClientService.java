@@ -9,6 +9,8 @@ import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.model.Account;
 
 import java.util.List;
+import testtask.accounts.exception.ClientException;
+import testtask.accounts.exception.MicroserviceException;
 import testtask.accounts.model.Client;
 
 /**
@@ -26,12 +28,17 @@ public class ClientService {
     private ClientRepository repository;
 
     /**
+     * Find Client By id
      *
      * @param id
      * @return
      */
     public Client findOne(Long id) {
-        return ClientConverter.entityToModel(repository.findOne(id));
+        ClientEntity entity = repository.findOne(id);
+        if (entity == null) {
+            throw new ClientException(id, MicroserviceException.ErrorTypes.not_found);
+        }
+        return ClientConverter.entityToModel(entity);
     }
 
     /**
@@ -67,7 +74,9 @@ public class ClientService {
      * @return
      */
     public Client create(Client client) {
-        // todo add exception
+        if (client.getId() != null) {
+            throw new ClientException(client.getId(), MicroserviceException.ErrorTypes.validation, "Can't create client with predefined id");
+        }
         return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
 
@@ -77,9 +86,15 @@ public class ClientService {
      * @return
      */
     public Client update(Client client) {
-        // todo add exception
-        ClientEntity e = repository.findOne(client.getId());
-        return ClientConverter.entityToModel(repository.save(e));
+
+        if (client.getId() == null) {
+            throw new ClientException(MicroserviceException.ErrorTypes.validation, "Can't update, id must be not null.");
+        }
+
+        if(!repository.exists(client.getId()))
+            throw new ClientException(client.getId(), MicroserviceException.ErrorTypes.not_found);
+        
+        return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
 
     /**
@@ -87,6 +102,14 @@ public class ClientService {
      * @param id
      */
     public void delete(Long id) {
+        if (id == null) {
+            throw new ClientException(MicroserviceException.ErrorTypes.validation, "Can't update, id must be not null");
+        }
+
+        if (repository.exists(id) == false) {
+            throw new ClientException(id, MicroserviceException.ErrorTypes.not_found);
+        }
+        
         // todo delete accounts
         repository.delete(id);
     }

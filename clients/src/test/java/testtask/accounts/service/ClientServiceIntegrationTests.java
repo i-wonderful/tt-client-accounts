@@ -4,7 +4,9 @@ import java.util.Date;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +17,7 @@ import testtask.accounts.dao.ClientConverter;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.model.Client;
+import static testtask.accounts.TestHelper.*;
 
 /**
  *
@@ -33,6 +36,9 @@ public class ClientServiceIntegrationTests {
 
     private ClientEntity entity;
     private Client entityModel;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void init() {
@@ -61,15 +67,26 @@ public class ClientServiceIntegrationTests {
     }
 
     @Test
-    public void testFind() {
+    public void findExistedClientById() {
         Client find = service.findOne(entityModel.getId());
         assertNotNull(find);
         assertEquals(entityModel.getFirstName(), find.getFirstName());
         assertEquals(entityModel.getLastName(), find.getLastName());
     }
 
+    /**
+     * Test throw exception then item not exist.
+     */
     @Test
-    public void testCreate() {
+    public void findNotExistedClientById() {
+        final long notExistedId = 52345345L;
+        thrown.expect(expNotFoundMatcher(notExistedId));
+
+        service.findOne(notExistedId);
+    }
+
+    @Test
+    public void canCreateNewClient() {
         Client clientNew = new Client();
         clientNew.setFirstName("Max");
         clientNew.setMiddleName("Mad");
@@ -83,14 +100,55 @@ public class ClientServiceIntegrationTests {
         assertEquals(clientNew.getMiddleName(), clientFromDb.getMiddleName());
     }
 
+    /**
+     * Test throw validation exception when try to create item with id.
+     */
     @Test
-    public void testUpdate() {
+    public void cantCreateNewClientWithId() {
+        thrown.expect(expValidationMatcher());
+
+        Client clientNew = new Client();
+        clientNew.setMiddleName("King");
+        clientNew.setFirstName("Arthur");
+        clientNew.setId(12L);
+
+        service.create(clientNew);
+    }
+
+    @Test
+    public void canUpdateExistedClient() {
+
         final String newMiddleName = "Daredevil";
         entityModel.setMiddleName(newMiddleName);
-        service.create(entityModel);
-        
-        Client clientFromDb = ClientConverter.entityToModel( repository.findOne(entityModel.getId()));
+        service.update(entityModel);
+
+        Client clientFromDb = ClientConverter.entityToModel(repository.findOne(entityModel.getId()));
         assertEquals(newMiddleName, clientFromDb.getMiddleName());
+    }
+
+    /**
+     * Test throw validation exception when try to update client without id.
+     */
+    @Test
+    public void cantUpdateClientWithoutId() {
+        thrown.expect(expValidationMatcher());
+
+        service.update(new Client("Mistery", "Person"));
+    }
+
+    /**
+     * Test throw not found exception when try to update not existed client.
+     */
+    @Test
+    public void cantUpdateNotExistedClient() {
+        final long notExistedId = 4234534543L;
+
+        thrown.expect(expNotFoundMatcher(notExistedId));
+
+        Client client = new Client("Jim", "Jarmusch");
+        client.setId(notExistedId);
+
+        service.update(client);
     }
 
     @Test
@@ -98,7 +156,9 @@ public class ClientServiceIntegrationTests {
         service.delete(entityModel.getId());
 
         assertFalse(repository.exists(entityModel.getId()));
-        
+
     }
+
+   
 
 }

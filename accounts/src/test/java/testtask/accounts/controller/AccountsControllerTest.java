@@ -16,8 +16,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import testtask.accounts.AccountException;
-import testtask.accounts.ApiErrorDto;
+import testtask.accounts.exception.AccountException;
+import testtask.accounts.exception.ApiErrorDto;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Currency;
 import testtask.accounts.service.AccountService;
@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import testtask.accounts.AccountsApplication;
+
 
 /**
  * Created by Alex Volobuev on 26.01.2018.
