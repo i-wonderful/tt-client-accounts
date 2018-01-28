@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package testtask.accounts.serializator;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -19,11 +15,14 @@ import java.text.NumberFormat;
  */
 public class JsonBigDecimalSerializer extends JsonSerializer<BigDecimal> {
 
-    NumberFormat format = NumberFormat.getNumberInstance();
+    private final NumberFormat format = NumberFormat.getNumberInstance();
+
+    public JsonBigDecimalSerializer() {
+         format.setGroupingUsed(false);
+    }
 
     @Override
     public void serialize(BigDecimal val, JsonGenerator jg, SerializerProvider sp) throws IOException, JsonProcessingException {
-
         jg.writeNumber(format.format(val));
     }
 

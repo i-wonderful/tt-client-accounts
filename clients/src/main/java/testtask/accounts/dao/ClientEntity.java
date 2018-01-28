@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package testtask.accounts.dao;
 
@@ -27,7 +22,6 @@ public class ClientEntity {
     private String middleName;
     private String lastName;
     private Date birthday;
-    //private List<Account> accounts;
 
     public Long getId() {
         return id;

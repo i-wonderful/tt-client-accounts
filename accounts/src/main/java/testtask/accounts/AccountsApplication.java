@@ -1,5 +1,7 @@
 package testtask.accounts;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.MapperFeature;
 import testtask.accounts.serializator.JsonBigDecimalSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
@@ -40,6 +42,8 @@ public class AccountsApplication {
         JsonComponentModule jsonBigDecimal = new JsonComponentModule();
         jsonBigDecimal.addSerializer(BigDecimal.class, new JsonBigDecimalSerializer());
         mapper.registerModule(jsonBigDecimal);
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+//        mapper.configure(MapperFeature.ALLOW_EXPLICIT_PROPERTY_RENAMING, true);
         return mapper;
     }
 //    @Bean

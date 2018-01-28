@@ -57,7 +57,7 @@ public class ClientControllerMockTests {
     }
 
     /**
-     * Test thrown error json then client not found.
+     * Test thrown json error when client not found.
      */
     @Test
     public void findNotExistedClient() throws Exception {
@@ -131,12 +131,12 @@ public class ClientControllerMockTests {
     public void canUpdateClient() throws IOException, Exception {
 
         // given
+        final long clientId = 3L;
         Client client = new Client("Tim", "Burton");
-        client.setId(3L);
-        BDDMockito.given(clientService.update(client)).willReturn(client);
+        BDDMockito.given(clientService.update(clientId, client)).willReturn(client);
 
         // when
-        MockHttpServletResponse responce = mockMvc.perform(put("/client")
+        MockHttpServletResponse responce = mockMvc.perform(put("/client/" + clientId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jacksonTester.write(client).getJson()))
                 .andDo(print())

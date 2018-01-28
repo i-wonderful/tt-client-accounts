@@ -68,7 +68,7 @@ public class ClientService {
     }
 
     /**
-     * Save or Update item
+     * Create new Client.
      *
      * @param client
      * @return
@@ -81,19 +81,23 @@ public class ClientService {
     }
 
     /**
-     *
+     * Update Client.
+     * 
+     * @param id
      * @param client
      * @return
      */
-    public Client update(Client client) {
+    public Client update(Long id, Client client) {
 
-        if (client.getId() == null) {
+        if (id == null) {
             throw new ClientException(MicroserviceException.ErrorTypes.validation, "Can't update, id must be not null.");
         }
 
-        if(!repository.exists(client.getId()))
+        if (!repository.exists(id)) {
             throw new ClientException(client.getId(), MicroserviceException.ErrorTypes.not_found);
-        
+        }
+
+        client.setId(id);
         return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
 
@@ -103,13 +107,13 @@ public class ClientService {
      */
     public void delete(Long id) {
         if (id == null) {
-            throw new ClientException(MicroserviceException.ErrorTypes.validation, "Can't update, id must be not null");
+            throw new ClientException(MicroserviceException.ErrorTypes.validation, "Can't delete, id must be not null");
         }
 
         if (repository.exists(id) == false) {
             throw new ClientException(id, MicroserviceException.ErrorTypes.not_found);
         }
-        
+
         // todo delete accounts
         repository.delete(id);
     }

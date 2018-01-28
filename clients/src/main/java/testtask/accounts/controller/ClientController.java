@@ -47,14 +47,14 @@ public class ClientController {
         return new ResponseEntity<>(client, HttpStatus.CREATED);
     }
 
-    @PutMapping
-    public ResponseEntity<Client> update(@RequestBody Client client) {
-        client = clientService.create(client);
+    @PutMapping("/{id}")
+    public ResponseEntity<Client> update(@PathVariable Long id, @RequestBody Client client) {
+        client = clientService.update(id, client);
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id){
+    public ResponseEntity delete(@PathVariable Long id) {
         clientService.delete(id);
         return new ResponseEntity(HttpStatus.OK);
     }
