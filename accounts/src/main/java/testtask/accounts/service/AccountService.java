@@ -19,10 +19,12 @@ import java.util.List;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final AccountValidations validations;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository, AccountValidations validations) {
         this.accountRepository = accountRepository;
+        this.validations = validations;
     }
 
     public Account create(Account account) {
@@ -36,7 +38,8 @@ public class AccountService {
     public Account get(Long id) {
         AccountEntity accountEntity = accountRepository.findOne(id);
         if (accountEntity == null) {
-            throw new AccountException(AccountException.ErrorTypes.not_found, "Account with id: " + id + " not found");
+            throw new AccountException(AccountException.ErrorTypes.not_found,
+                    "Account with id: " + id + " not found");
         }
         Account account = AccountConvertor.entityToModel(accountEntity);
         log.info("Get account: " + account);
@@ -44,6 +47,7 @@ public class AccountService {
     }
 
     public void update(Account account) {
+        validations.validateAccount(account);
         AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
         log.info("Update account: " + account);
         accountRepository.save(accountEntity);
@@ -68,5 +72,22 @@ public class AccountService {
         log.info("Find all accounts of client with ID {} : {}", clientId, accounts);
         return accounts;
     }
+
+    public void updateAllAccountsOfClient (Iterable<Account> accounts, Long clientId) {
+        //TODO delete all before bulk update
+        validations.allAccountsHasClientId(accounts,clientId);
+        Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
+        accountRepository.save(accountEntities);
+        log.info("Bulk account update of client with ID {} : {}", clientId, accounts);
+    }
+
+    public void deleteAllAccountsOfClient (Long clientId) {
+        Iterable<Account> accounts = findByClientId(clientId);
+        Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
+        accountRepository.delete(accountEntities);
+        log.info("Bulk account delete of client with ID {} : {}", clientId, accounts);
+    }
+
+
 
 }

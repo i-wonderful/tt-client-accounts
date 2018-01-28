@@ -29,7 +29,6 @@ public class AccountEntity {
     private String name;
     private BigDecimal balance;
 
-//    @EnumValidator(enumClazz=Currency.class,message="Is not a valid currency")
     private Currency currency;
 
 
