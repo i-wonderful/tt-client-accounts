@@ -11,6 +11,11 @@ public class ApiErrorDto {
     private String message;
     private String errType;
 
+    public ApiErrorDto(HttpStatus status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
     public ApiErrorDto(AccountException e) {
         AccountException.ErrorTypes type = e.getType();
         switch (type) {

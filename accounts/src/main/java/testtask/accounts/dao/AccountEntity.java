@@ -11,6 +11,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
 /**
@@ -25,9 +29,20 @@ public class AccountEntity {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
+    @NotNull
+    @Digits(integer=6, fraction=0)
     private Long clientId;
+
+    @Pattern(regexp = "[\\p{L} 0-9]+", message = "Only letters numbers and space")
+    @NotNull
     private String name;
+
+    @NotNull
+    @Min(value = 0L, message = "The value must be positive")
+//    @Digits(integer=6, fraction=2)
     private BigDecimal balance;
+
+//    @EnumValidator(enumClazz=Currency.class,message="Is not a valid currency")
     private Currency currency;
 
 
