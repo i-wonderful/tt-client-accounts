@@ -1,6 +1,7 @@
 package testtask.accounts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,21 +15,17 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import testtask.accounts.exception.ApiErrorDto;
-import testtask.accounts.exception.ClientException;
-import testtask.accounts.exception.ClientExceptionHandler;
-import testtask.accounts.exception.MicroserviceException;
 import testtask.accounts.model.Client;
 import testtask.accounts.service.ClientService;
-
-import java.io.IOException;
+import testtask.accounts.exception.ApiErrorDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import testtask.accounts.exception.ClientExceptionHandler;
+import testtask.accounts.exception.ClientException;
+import testtask.accounts.exception.MicroserviceException;
 
 /**
  *
@@ -59,10 +56,7 @@ public class ClientControllerMockTests {
        
     }
 
-    /**
-     * Test throws error json then client not found.
-     * Предлагаю называть тесты так чтобы не писать javadoc к нему
-     */
+
     @Test
     public void shouldThrowJsonErrorWhenSearchingNotExistingClient() throws Exception {
         
@@ -135,12 +129,12 @@ public class ClientControllerMockTests {
     public void canUpdateClient() throws IOException, Exception {
 
         // given
+        final long clientId = 3L;
         Client client = new Client("Tim", "Burton");
-        client.setId(3L);
-        BDDMockito.given(clientService.update(client)).willReturn(client);
+        BDDMockito.given(clientService.update(clientId, client)).willReturn(client);
 
         // when
-        MockHttpServletResponse responce = mockMvc.perform(put("/client")
+        MockHttpServletResponse responce = mockMvc.perform(put("/client/" + clientId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jacksonTester.write(client).getJson()))
                 .andDo(print())

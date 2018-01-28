@@ -120,7 +120,7 @@ public class ClientServiceIntegrationTests {
 
         final String newMiddleName = "Daredevil";
         entityModel.setMiddleName(newMiddleName);
-        service.update(entityModel);
+        service.update(entityModel.getId(), entityModel);
 
         Client clientFromDb = ClientConverter.entityToModel(repository.findOne(entityModel.getId()));
         assertEquals(newMiddleName, clientFromDb.getMiddleName());
@@ -133,7 +133,7 @@ public class ClientServiceIntegrationTests {
     public void cantUpdateClientWithoutId() {
         thrown.expect(expValidationMatcher());
 
-        service.update(new Client("Mistery", "Person"));
+        service.update(null, new Client("Mistery", "Person"));
     }
 
     /**
@@ -148,7 +148,7 @@ public class ClientServiceIntegrationTests {
         Client client = new Client("Jim", "Jarmusch");
         client.setId(notExistedId);
 
-        service.update(client);
+        service.update(notExistedId, client);
     }
 
     @Test
@@ -159,6 +159,16 @@ public class ClientServiceIntegrationTests {
 
     }
 
-   
+    /**
+     * Test throw not found exception when try to delete not existed client.
+     */
+    @Test
+    public void cantDeleteNotExistedClient() {
+        final long notExistedId = 67567567L;
+
+        thrown.expect(expNotFoundMatcher(notExistedId));
+
+        service.delete(notExistedId);
+    }
 
 }
