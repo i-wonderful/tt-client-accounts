@@ -1,12 +1,10 @@
 package testtask.accounts.exception;
 
-import testtask.accounts.exception.AccountException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-//import testtask.accounts.ApiErrorDto;
 
 /**
  * Created by Alex Volobuev on 26.01.2018.
