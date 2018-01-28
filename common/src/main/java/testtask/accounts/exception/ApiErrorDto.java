@@ -14,9 +14,7 @@ public class ApiErrorDto {
     public ApiErrorDto() {
     }
 
-    
-    public ApiErrorDto(MicroserviceException e) {
-        MicroserviceException.ErrorTypes type = e.getType();
+    public ApiErrorDto (MicroserviceException.ErrorTypes type, String info) {
         switch (type) {
             case business:
                 status = HttpStatus.CONFLICT;
@@ -31,8 +29,12 @@ public class ApiErrorDto {
                 status = HttpStatus.BAD_REQUEST;
                 break;
         }
-        this.message = e.getInfo();
+        this.message = info;
         this.errType = type.name();
+    }
+    
+    public ApiErrorDto(MicroserviceException e) {
+        this(e.getType(), e.getInfo());
     }
 
     public HttpStatus getStatus() {

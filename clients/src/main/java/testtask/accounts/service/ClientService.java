@@ -1,5 +1,6 @@
 package testtask.accounts.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,9 @@ import java.util.List;
 /**
  * Created by Alex Volobuev on 24.01.2018.
  */
+@SuppressWarnings("JavaDoc")
 @Service
+@Slf4j
 public class ClientService {
 
     @Value("${acc-mks.server.port}")
@@ -29,11 +32,15 @@ public class ClientService {
     @Value("${acc-mks.base.url}")
     private String URL_ACCOUNTS;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    private final ClientRepository repository;
 
     @Autowired
-    private ClientRepository repository;
+    public ClientService(RestTemplate restTemplate, ClientRepository repository) {
+        this.restTemplate = restTemplate;
+        this.repository = repository;
+    }
 
     /**
      * Find Client By id
@@ -64,7 +71,7 @@ public class ClientService {
         Client client = findOne(id);
         String path = URL_HOST + ":" + PORT + URL_ACCOUNTS + "/ClientId/" + id;
 
-        System.out.println(">> Get Client with Accounts by url " + path);
+        log.info("Get client with accounts by url: " + path);
 
         List<Account> accounts = restTemplate.getForObject(path, List.class);
         client.setAccounts(accounts);
@@ -114,7 +121,7 @@ public class ClientService {
             throw new ClientException(MicroserviceException.ErrorTypes.validation, "Can't delete, id must be not null");
         }
 
-        if (repository.exists(id) == false) {
+        if (!repository.exists(id)) {
             throw new ClientException(id, MicroserviceException.ErrorTypes.not_found);
         }
 
