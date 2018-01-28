@@ -33,11 +33,10 @@ public class AccountService {
         return account;
     }
 
-    //TODO transactions if necessary
     public Account get(Long id) {
         AccountEntity accountEntity = accountRepository.findOne(id);
         if (accountEntity == null) {
-            throw new AccountException(AccountException.ErrorTypes.not_found ,"Account with id: " + id + " not found");
+            throw new AccountException(AccountException.ErrorTypes.not_found, "Account with id: " + id + " not found");
         }
         Account account = AccountConvertor.entityToModel(accountEntity);
         log.info("Get account: " + account);

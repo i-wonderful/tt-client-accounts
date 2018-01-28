@@ -1,17 +1,18 @@
 package testtask.accounts.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import testtask.accounts.dao.ClientConverter;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
-import testtask.accounts.model.Account;
-
-import java.util.List;
 import testtask.accounts.exception.ClientException;
 import testtask.accounts.exception.MicroserviceException;
+import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
+
+import java.util.List;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
@@ -19,7 +20,10 @@ import testtask.accounts.model.Client;
 @Service
 public class ClientService {
 
-    private static final String URL_ACCOUNTS = "http://localhost:8081/accounts";
+    @Value("${server.port}")
+    private static String serverPort;
+
+    private static final String URL_ACCOUNTS = "http://localhost:" + serverPort + "/accounts";
 
     @Autowired
     private RestTemplate restTemplate;
