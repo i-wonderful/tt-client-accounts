@@ -49,7 +49,7 @@ public class ClientException extends MicroserviceException {
             case validation:
                 errorMessage = "Validation Error"; break;
             case other:
-                errorMessage = "Some Error"; break;
+                errorMessage = "Some other Error"; break;
         }
         errorMessage += clientId != null ? ", clientId = " + clientId : "";
         return errorMessage;

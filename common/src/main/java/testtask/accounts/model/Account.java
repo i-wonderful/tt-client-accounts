@@ -20,6 +20,16 @@ public class Account {
     private BigDecimal balance;
     private Currency currency;
 
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", clientId=" + clientId +
+                ", name='" + name + '\'' +
+                ", balance=" + balance +
+                ", currency=" + currency +
+                '}';
+    }
 
     public Long getClientId() {
         return clientId;

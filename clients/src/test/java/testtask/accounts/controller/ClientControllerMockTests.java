@@ -1,7 +1,6 @@
 package testtask.accounts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,17 +14,21 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import testtask.accounts.exception.ApiErrorDto;
+import testtask.accounts.exception.ClientException;
+import testtask.accounts.exception.ClientExceptionHandler;
+import testtask.accounts.exception.MicroserviceException;
 import testtask.accounts.model.Client;
 import testtask.accounts.service.ClientService;
-import testtask.accounts.exception.ApiErrorDto;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import testtask.accounts.exception.ClientExceptionHandler;
-import testtask.accounts.exception.ClientException;
-import testtask.accounts.exception.MicroserviceException;
 
 /**
  *
@@ -57,10 +60,11 @@ public class ClientControllerMockTests {
     }
 
     /**
-     * Test thrown error json then client not found.
+     * Test throws error json then client not found.
+     * Предлагаю называть тесты так чтобы не писать javadoc к нему
      */
     @Test
-    public void findNotExistedClient() throws Exception {
+    public void shouldThrowJsonErrorWhenSearchingNotExistingClient() throws Exception {
         
         // given
         final long notExistedClientId = 435435446L;
