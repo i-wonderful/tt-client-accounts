@@ -1,21 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package testtask.accounts.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import org.assertj.core.util.Lists;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.CustomMatcher;
+
+//import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
@@ -28,6 +28,8 @@ import testtask.accounts.dao.AccountRepository;
 import testtask.accounts.dao.ClientConverter;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
+import testtask.accounts.exception.ClientException;
+import testtask.accounts.exception.MicroserviceException;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
 import testtask.accounts.model.Currency;
@@ -51,33 +53,41 @@ public class MksServiceIntegrationTests {
     @Autowired
     private ClientService clientService;
 
-    ClientEntity clientEntity;
-    Client client;
-    List<AccountEntity> accountsEntities;
-    List<Account> accounts;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    /* Test Data */
+    private Client clientWithAccounts;
+    private List<Account> accounts;
+    private Client clientWithoutAccounts;
 
     @Before
     public void init() {
-//        System.setProperty("server.port", "7780");
-        
-        clientEntity = new ClientEntity();
-        clientEntity.setFirstName("James");
-        clientEntity.setLastName("Cameron");
-        clientEntity = clientRepository.save(clientEntity);
+
+        ClientEntity clientWithAccountsEntity = new ClientEntity();
+        clientWithAccountsEntity.setFirstName("James");
+        clientWithAccountsEntity.setLastName("Cameron");
+        clientWithAccountsEntity = clientRepository.save(clientWithAccountsEntity);
+
+        ClientEntity clientWithoutAccountsEntity = new ClientEntity();
+        clientWithoutAccountsEntity.setFirstName("Robert");
+        clientWithoutAccountsEntity.setLastName("Zemeckis");
+        clientWithoutAccountsEntity.setMiddleName("Lee");
+        clientWithoutAccountsEntity = clientRepository.save(clientWithoutAccountsEntity);
 
         AccountEntity account1 = new AccountEntity();
         account1.setName("Main Acc");
         account1.setCurrency(Currency.USD);
         account1.setBalance(new BigDecimal(543757));
-        account1.setClientId(clientEntity.getId());
+        account1.setClientId(clientWithAccountsEntity.getId());
 
         AccountEntity account2 = new AccountEntity();
         account2.setName("Film Budget");
         account2.setCurrency(Currency.USD);
         account2.setBalance(new BigDecimal(754555.95));
-        account2.setClientId(clientEntity.getId());
+        account2.setClientId(clientWithAccountsEntity.getId());
 
-        accountsEntities = new ArrayList<>();
+        List<AccountEntity> accountsEntities = new ArrayList<>();
         accountRepository.save(new ArrayList<AccountEntity>() {
             {
                 add(account1);
@@ -85,30 +95,64 @@ public class MksServiceIntegrationTests {
             }
         }).forEach(accountsEntities::add);
 
-        client = ClientConverter.entityToModel(clientEntity);
+        clientWithAccounts = ClientConverter.entityToModel(clientWithAccountsEntity);
         accounts = AccountConvertor.entityListToModels(accountsEntities);
-    }
-
-    @Test
-    public void blob() {
-
-       assertTrue(true);
+        clientWithoutAccounts = ClientConverter.entityToModel(clientWithoutAccountsEntity);
     }
 
     @Test
     public void findClientWithAccounts() {
-        Client clientFind = clientService.findWithAccounts(client.getId());
+        Client clientFind = clientService.findWithAccounts(clientWithAccounts.getId());
 
         assertNotNull(clientFind);
         assertNotNull(clientFind.getAccounts());
 
         // check client
-        assertEquals(client.getFirstName(), clientFind.getFirstName());
-        assertEquals(client.getLastName(), clientFind.getLastName());
+        assertEquals(clientWithAccounts.getFirstName(), clientFind.getFirstName());
+        assertEquals(clientWithAccounts.getLastName(), clientFind.getLastName());
 
         // check accounts
-        assertEquals(accounts.size(), clientFind.getAccounts().size());
-
+        assertThat(clientFind.getAccounts(), containsInAnyOrder(accounts.toArray()));
     }
 
+    @Test
+    public void throwNotFoundExceptionWhenClientNotExist() {
+        final long notExistedId = 535434534L;
+
+        thrown.expect(expNotFoundMatcher(notExistedId));
+        clientService.findWithAccounts(notExistedId);
+    }
+
+    @Test
+    public void findClientWitoutAccounts(){
+    Client clientFind = clientService.findWithAccounts(clientWithoutAccounts.getId());
+    
+        assertNotNull(clientFind);
+        assertNotNull(clientFind.getAccounts());
+        
+        assertTrue(clientFind.getAccounts().isEmpty());
+    }
+
+    /**
+     * Create Matcher for not found exception with standard message.
+     *
+     * @param notExistedId
+     * @return
+     */
+    public static CustomMatcher<ClientException> expNotFoundMatcher(final long notExistedId) {
+        return new CustomMatcher<ClientException>("Check ClientException for not found client.") {
+            @Override
+            public boolean matches(Object o) {
+
+                if (o instanceof ClientException == false) {
+                    return false;
+                }
+
+                ClientException ex = (ClientException) o;
+                return ex.getClientId().equals(notExistedId)
+                        && ex.getType().equals(MicroserviceException.ErrorTypes.not_found)
+                        && ex.getInfo().equals(ClientException.getStandartInfo(MicroserviceException.ErrorTypes.not_found, notExistedId));
+            }
+        };
+    }
 }

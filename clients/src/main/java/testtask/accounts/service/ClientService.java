@@ -1,5 +1,6 @@
 package testtask.accounts.service;
 
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,9 +75,11 @@ public class ClientService {
 
         log.info("Get client with accounts by url: " + path);
 
-        ResponseEntity<List> responce = restTemplate.getForEntity(path, List.class);
+        ResponseEntity<Account[]> responce = restTemplate.getForEntity(path, Account[].class);
         
-        List<Account> accounts = responce.getBody();
+        // todo check Exceptions
+        List<Account> accounts = Arrays.asList(responce.getBody());
+        //log.info("" + accounts.toString());
         client.setAccounts(accounts);
         return client;
     }
