@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,7 +60,7 @@ public class AccountsControllerTest {
         JacksonTester.initFields(this, AccountsApplication.serializingObjectMapper());
 //        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 
-        initAccountSalary();
+        initAccountSalary(100.20, Currency.RUB, 777L, "Зарплатный");
     }
 
     @After
@@ -67,12 +68,12 @@ public class AccountsControllerTest {
         cleanupAccountSalary();
     }
 
-    private void initAccountSalary () {
+    private void initAccountSalary(double balance, Currency currency, long clientId, String name) {
         account = new Account();
-        account.setBalance(new BigDecimal(100.20));
-        account.setCurrency(Currency.RUB);
-        account.setClientId(777L);
-        account.setName("Зарплатный");
+        account.setBalance(new BigDecimal(balance));
+        account.setCurrency(currency);
+        account.setClientId(clientId);
+        account.setName(name);
         account = accountService.create(account);
     }
 
@@ -122,6 +123,19 @@ public class AccountsControllerTest {
 
     @Test
     public void update() throws Exception {
+
+
+        mockMvc.perform(put("/accounts/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("  {\n" +
+                        "   \"clientId\": 1,\n" +
+                        "   \"name\": \"валютный\",\n" +
+                        "   \"balance\": 121 ,\n" +
+                        "   \"currency\": \"USD\"\n" +
+                        "   }"))
+                .andExpect(status().isOk());
+
+
     }
 
     @Test
