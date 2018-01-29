@@ -60,26 +60,25 @@ public class ClientService {
 
     /**
      * Find Client with accounts.
-     * 
+     *
      * @param id
      * @return
      */
     public Client findWithAccounts(Long id) {
 
-        if(id == null)
+        if (id == null) {
             throw new ClientException(MicroserviceException.ErrorTypes.validation, "Client Id must be not null.");
-        
-        
+        }
+
         Client client = findOne(id);
         String path = URL_HOST + ":" + PORT + URL_ACCOUNTS + "/ClientId/" + id;
 
         log.info("Get client with accounts by url: " + path);
 
         ResponseEntity<Account[]> responce = restTemplate.getForEntity(path, Account[].class);
-        
+
         // todo check Exceptions
         List<Account> accounts = Arrays.asList(responce.getBody());
-        //log.info("" + accounts.toString());
         client.setAccounts(accounts);
         return client;
     }

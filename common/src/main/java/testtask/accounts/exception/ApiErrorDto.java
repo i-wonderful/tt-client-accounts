@@ -1,6 +1,7 @@
 package testtask.accounts.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.ResourceAccessException;
 
 /**
  * Created by Alex Volobuev on 26.01.2018.
@@ -14,7 +15,7 @@ public class ApiErrorDto {
     public ApiErrorDto() {
     }
 
-    public ApiErrorDto (MicroserviceException.ErrorTypes type, String info) {
+    public ApiErrorDto(MicroserviceException.ErrorTypes type, String info) {
         switch (type) {
             case business:
                 status = HttpStatus.CONFLICT;
@@ -25,6 +26,9 @@ public class ApiErrorDto {
             case not_found:
                 status = HttpStatus.NOT_FOUND;
                 break;
+            case bad_mks_request:
+                status = HttpStatus.BAD_REQUEST;
+                break;
             case other:
                 status = HttpStatus.BAD_REQUEST;
                 break;
@@ -32,9 +36,13 @@ public class ApiErrorDto {
         this.message = info;
         this.errType = type.name();
     }
-    
+
     public ApiErrorDto(MicroserviceException e) {
         this(e.getType(), e.getInfo());
+    }
+    
+    public ApiErrorDto(ResourceAccessException exp) {
+        this(MicroserviceException.ErrorTypes.bad_mks_request, exp.getLocalizedMessage());
     }
 
     public HttpStatus getStatus() {

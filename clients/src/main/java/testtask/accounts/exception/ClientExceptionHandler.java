@@ -1,10 +1,10 @@
-
 package testtask.accounts.exception;
 
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.ResourceAccessException;
 
 /**
  *
@@ -25,6 +25,14 @@ public class ClientExceptionHandler {
         }
 
         ApiErrorDto apiErrorDto = new ApiErrorDto(out);
+        responce.setStatus(apiErrorDto.getStatus().value());
+        return apiErrorDto;
+    }
+
+    @ExceptionHandler(ResourceAccessException.class)
+    public ApiErrorDto handleResourceException(ResourceAccessException ex, HttpServletResponse responce) {
+
+        ApiErrorDto apiErrorDto = new ApiErrorDto(ex);
         responce.setStatus(apiErrorDto.getStatus().value());
         return apiErrorDto;
     }

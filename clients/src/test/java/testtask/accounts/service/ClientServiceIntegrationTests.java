@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.ResourceAccessException;
 import testtask.accounts.ClientsApplication;
 import testtask.accounts.dao.ClientConverter;
 import testtask.accounts.dao.ClientEntity;
@@ -34,6 +35,7 @@ public class ClientServiceIntegrationTests {
     @Autowired
     private ClientRepository repository;
 
+    /* Test Data */
     private ClientEntity entity;
     private Client entityModel;
 
@@ -78,7 +80,7 @@ public class ClientServiceIntegrationTests {
      * Test throw exception then item not exist.
      */
     @Test
-    public void findNotExistedClientById() {
+    public void throwClientExceptionWhenFindNotExistedClientById() {
         final long notExistedId = 52345345L;
         thrown.expect(expNotFoundMatcher(notExistedId));
 
@@ -104,7 +106,7 @@ public class ClientServiceIntegrationTests {
      * Test throw validation exception when try to create item with id.
      */
     @Test
-    public void cantCreateNewClientWithId() {
+    public void throwClientExceptionWhenCreateNewClientWithId() {
         thrown.expect(expValidationMatcher());
 
         Client clientNew = new Client();
@@ -130,7 +132,7 @@ public class ClientServiceIntegrationTests {
      * Test throw validation exception when try to update client without id.
      */
     @Test
-    public void cantUpdateClientWithoutId() {
+    public void throwClientExceptionWhenUpdateClientWithoutId() {
         thrown.expect(expValidationMatcher());
 
         service.update(null, new Client("Mistery", "Person"));
@@ -140,7 +142,7 @@ public class ClientServiceIntegrationTests {
      * Test throw not found exception when try to update not existed client.
      */
     @Test
-    public void cantUpdateNotExistedClient() {
+    public void throwClientExceptionWhenUpdateNotExistedClient() {
         final long notExistedId = 4234534543L;
 
         thrown.expect(expNotFoundMatcher(notExistedId));
@@ -163,7 +165,7 @@ public class ClientServiceIntegrationTests {
      * Test throw not found exception when try to delete not existed client.
      */
     @Test
-    public void cantDeleteNotExistedClient() {
+    public void throwClientExceptionWhenDeleteNotExistedClient() {
         final long notExistedId = 67567567L;
 
         thrown.expect(expNotFoundMatcher(notExistedId));
@@ -171,4 +173,10 @@ public class ClientServiceIntegrationTests {
         service.delete(notExistedId);
     }
 
+    @Test
+    public void throwResourceExpWhenTryToUseExistedMicroservice(){
+        thrown.expect(ResourceAccessException.class);
+        
+        service.findWithAccounts(entityModel.getId());
+    }
 }

@@ -13,6 +13,7 @@ public class MicroserviceException extends RuntimeException {
         business,
         validation,
         not_found,
+        bad_mks_request,
         other
     }
 
