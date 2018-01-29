@@ -1,5 +1,6 @@
 package testtask.accounts.controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +39,8 @@ public class AccountsController {
     }
 
     @GetMapping("/ClientId/{id}")
-    public Iterable<Account> getByClientId(@PathVariable("id") Long clientId) {
-        return accountService.findByClientId(clientId);
+    public ResponseEntity<List<Account>> getByClientId(@PathVariable("id") Long clientId) {
+        return new ResponseEntity<>( accountService.findByClientId(clientId), HttpStatus.OK);
     }
 
     @PostMapping()

@@ -1,5 +1,6 @@
 package testtask.accounts.service;
 
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
 
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
@@ -58,22 +60,25 @@ public class ClientService {
 
     /**
      * Find Client with accounts.
-     * 
+     *
      * @param id
      * @return
      */
     public Client findWithAccounts(Long id) {
 
-        if(id == null)
+        if (id == null) {
             throw new ClientException(MicroserviceException.ErrorTypes.validation, "Client Id must be not null.");
-        
-        
+        }
+
         Client client = findOne(id);
         String path = URL_HOST + ":" + PORT + URL_ACCOUNTS + "/ClientId/" + id;
 
         log.info("Get client with accounts by url: " + path);
 
-        List<Account> accounts = restTemplate.getForObject(path, List.class);
+        ResponseEntity<Account[]> responce = restTemplate.getForEntity(path, Account[].class);
+
+        // todo check Exceptions
+        List<Account> accounts = Arrays.asList(responce.getBody());
         client.setAccounts(accounts);
         return client;
     }

@@ -1,4 +1,3 @@
-
 package testtask.accounts.exception;
 
 /**
@@ -24,12 +23,10 @@ public class ClientException extends MicroserviceException {
         this.clientId = null;
     }
 
-    
     public ClientException(Long clientId, ErrorTypes type, String info) {
         super(type, info);
         this.clientId = clientId;
     }
-    
 
     public Long getClientId() {
         return clientId;
@@ -39,13 +36,21 @@ public class ClientException extends MicroserviceException {
         String errorMessage = "Error Message";
         switch (type) {
             case not_found:
-                errorMessage = "Not found client"; break;
+                errorMessage = "Not found client";
+                break;
             case business:
-                errorMessage = "Busness Error"; break;
+                errorMessage = "Busness Error";
+                break;
             case validation:
-                errorMessage = "Validation Error"; break;
+                errorMessage = "Validation Error";
+                break;
+            case bad_mks_request:
+                errorMessage = "Resource request exception";
+                break;
             case other:
-                errorMessage = "Some other Error"; break;
+                errorMessage = "Some other Error";
+                break;
+
         }
         errorMessage += clientId != null ? ", clientId = " + clientId : "";
         return errorMessage;

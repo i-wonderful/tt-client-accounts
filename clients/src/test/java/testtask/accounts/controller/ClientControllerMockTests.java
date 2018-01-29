@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.web.client.ResourceAccessException;
 import testtask.accounts.exception.ClientExceptionHandler;
 import testtask.accounts.exception.ClientException;
 import testtask.accounts.exception.MicroserviceException;
@@ -44,32 +45,31 @@ public class ClientControllerMockTests {
 
     private JacksonTester<Client> jacksonTester;
     private JacksonTester<ApiErrorDto> testerErrorJson;
-    
+
     @Before
     public void init() {
         // initialize jacksonTester
         JacksonTester.initFields(this, new ObjectMapper());
-        
+
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new ClientExceptionHandler()) // Init Exception Handler
                 .build();
-       
-    }
 
+    }
 
     @Test
     public void shouldThrowJsonErrorWhenSearchingNotExistingClient() throws Exception {
-        
+
         // given
         final long notExistedClientId = 435435446L;
         BDDMockito.given(clientService.findOne(notExistedClientId))
                 .willThrow(new ClientException(notExistedClientId, MicroserviceException.ErrorTypes.not_found));
-        
+
         // when
         MockHttpServletResponse response = mockMvc.perform(get("/client/" + notExistedClientId))
                 .andDo(print())
                 .andReturn().getResponse();
-        
+
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         ApiErrorDto errorDto = testerErrorJson.parseObject(response.getContentAsString());
@@ -154,5 +154,23 @@ public class ClientControllerMockTests {
 
         // then
         assertThat(responce.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void getErrorWhenMksAccountsInNotAvailable() throws Exception {
+
+        final long clientId = 1L;
+        // given
+        BDDMockito.given(clientService.findWithAccounts(clientId)).willThrow(new ResourceAccessException("Resource Exception"));
+        
+        // when
+        MockHttpServletResponse responce = mockMvc.perform(get("/client/withAccounts/" + clientId))
+                .andDo(print())
+                .andReturn().getResponse();
+        
+        // then
+        assertThat(responce.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        
+        
     }
 }

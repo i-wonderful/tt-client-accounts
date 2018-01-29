@@ -36,8 +36,7 @@ public class ClientController {
     @GetMapping(value = "/withAccounts/{id}")
     public ResponseEntity<Client> findWithAccounts(@PathVariable Long id) {
         Client client = clientService.findWithAccounts(id);
-        HttpStatus status = (client != null) ? HttpStatus.OK : HttpStatus.NO_CONTENT;
-        return new ResponseEntity(client, status);
+        return new ResponseEntity(client, HttpStatus.OK);
     }
 
     @PostMapping
