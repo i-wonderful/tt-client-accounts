@@ -5,6 +5,11 @@
  */
 package testtask.accounts.model;
 
+
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
 /**
@@ -15,9 +20,20 @@ import java.math.BigDecimal;
 public class Account {
 
     private Long id;
+
+    @NotNull
+    @Digits(integer=6, fraction=0)
     private Long clientId;
+
+    @Pattern(regexp = "[\\p{L} 0-9]+", message = "Only letters numbers and space")
+    @NotNull
     private String name;
+
+    @NotNull
+    @Min(value = 0L, message = "The value must be positive")
+    @Digits(integer=10, fraction=2)
     private BigDecimal balance;
+
     private Currency currency;
 
     @Override

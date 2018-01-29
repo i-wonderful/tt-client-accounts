@@ -9,11 +9,11 @@ public class MicroserviceException extends RuntimeException {
     private final ErrorTypes type;
     private final String info;
 
-    public static enum ErrorTypes {
+    public enum ErrorTypes {
         business,
         validation,
         not_found,
-        other;
+        other
     }
 
     public MicroserviceException(RuntimeException ex) {

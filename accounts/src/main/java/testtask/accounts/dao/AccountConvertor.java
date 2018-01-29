@@ -36,4 +36,11 @@ public class AccountConvertor {
         return accountList;
     }
 
+    public static List<AccountEntity> modelsListToEntities (Iterable<Account> accountList) {
+        List<AccountEntity> entityList = new ArrayList<>();
+        accountList.forEach(account ->
+                entityList.add(AccountConvertor.modelToEntity(account)));
+        return entityList;
+    }
+
 }
