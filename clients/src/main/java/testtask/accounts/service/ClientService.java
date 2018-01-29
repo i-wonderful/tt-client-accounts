@@ -13,6 +13,7 @@ import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
 
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
@@ -66,7 +67,9 @@ public class ClientService {
 
         System.out.println(">> Get Client with Accounts by url " + path);
 
-        List<Account> accounts = restTemplate.getForObject(path, List.class);
+        ResponseEntity<List> responce = restTemplate.getForEntity(path, List.class);
+        
+        List<Account> accounts = responce.getBody();
         client.setAccounts(accounts);
         return client;
     }
