@@ -1,9 +1,9 @@
 package testtask.accounts.service;
 
-import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import testtask.accounts.dao.ClientConverter;
@@ -14,8 +14,8 @@ import testtask.accounts.exception.MicroserviceException;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
 
+import java.util.Arrays;
 import java.util.List;
-import org.springframework.http.ResponseEntity;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
@@ -75,10 +75,10 @@ public class ClientService {
 
         log.info("Get client with accounts by url: " + path);
 
-        ResponseEntity<Account[]> responce = restTemplate.getForEntity(path, Account[].class);
+        ResponseEntity<Account[]> response= restTemplate.getForEntity(path, Account[].class);
 
         // todo check Exceptions
-        List<Account> accounts = Arrays.asList(responce.getBody());
+        List<Account> accounts = Arrays.asList(response.getBody());
         client.setAccounts(accounts);
         return client;
     }
