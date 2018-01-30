@@ -1,5 +1,6 @@
 package testtask.accounts.controller;
 
+import io.swagger.annotations.Api;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,7 @@ import testtask.accounts.service.ClientService;
  */
 @RestController
 @RequestMapping(value = "/client")
+@Api(value = "clients", description = "Rest API for clients operations", tags = "Clients API")
 public class ClientController {
 
     private final ClientService clientService;
