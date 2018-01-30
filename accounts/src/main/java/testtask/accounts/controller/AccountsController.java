@@ -1,6 +1,6 @@
 package testtask.accounts.controller;
 
-import java.util.List;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import testtask.accounts.model.Account;
 import testtask.accounts.service.AccountService;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/accounts")
+@Api(value = "accounts", description = "Rest API for accounts operations", tags = "Accounts API")
 public class AccountsController {
 
     private final AccountService accountService;
