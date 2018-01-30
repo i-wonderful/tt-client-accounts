@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package testtask.accounts.controller;
 
 import java.util.Arrays;
@@ -14,41 +10,31 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.converter.xml.Jaxb2CollectionHttpMessageConverter;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import testtask.accounts.AccountsApplication;
 import static testtask.accounts.TestHelper.*;
 import testtask.accounts.exception.AccountExceptionHandler;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Currency;
 import testtask.accounts.service.AccountService;
-//import org.mockito.runners.MockitoJUnit44Runner;
 
 /**
  *
  * @author Olga Grazhdanova <dvl.java@gmail.com> at Jan 30, 2018
  */
 @RunWith(MockitoJUnitRunner.class)
-//@EnableWebMvc
 public class AccountsControllerMockTests {
 
     private static final String URL = "/accounts";
 
-//    @Autowired
     private MockMvc mockMvc;
 
     @Mock
@@ -70,14 +56,7 @@ public class AccountsControllerMockTests {
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(AccountsApplication.serializingObjectMapper()))// init custom serializator
                 .build();
     }
-//    @Test
-//    public void blob() {
-//
-//        assertThat(service).isNotNull();
-//        assertThat(mockMvc).isNotNull();
-//        assertThat(accountJacksonTester).isNotNull();
-//        assertThat(true).isTrue();
-//    }
+
     @Test
     public void findAccountById() throws Exception {
         // given
@@ -119,7 +98,7 @@ public class AccountsControllerMockTests {
     }
     
     @Test
-    public void getBadReqyestErrorThenGetAccountByNullClientId() throws Exception{
+    public void getBadRequestErrorThenGetAccountByNullClientId() throws Exception{
         
         // then
         MockHttpServletResponse response = mockMvc.perform(get(URL + "/ClientId/"))
