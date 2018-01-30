@@ -1,5 +1,6 @@
 package testtask.accounts.exception;
 
+//import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -29,6 +30,9 @@ public class ApiErrorDto {
             case bad_mks_request:
                 status = HttpStatus.BAD_REQUEST;
                 break;
+            case db_error:
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+                break;
             case other:
                 status = HttpStatus.BAD_REQUEST;
                 break;
@@ -44,6 +48,12 @@ public class ApiErrorDto {
     public ApiErrorDto(ResourceAccessException exp) {
         this(MicroserviceException.ErrorTypes.bad_mks_request, exp.getLocalizedMessage());
     }
+
+//public ApiErrorDto(DataAccessException ex) {
+//this()
+//    }
+    
+//    public ApiErrorDto(Da)
 
     public HttpStatus getStatus() {
         return status;

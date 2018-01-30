@@ -10,6 +10,7 @@ import testtask.accounts.exception.AccountException;
 import testtask.accounts.model.Account;
 
 import java.util.List;
+import testtask.accounts.exception.MicroserviceException;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
@@ -33,6 +34,16 @@ public class AccountService {
         account = AccountConvertor.entityToModel(accountEntity);
         log.info("Create account: " + account);
         return account;
+    }
+
+    public List<Account> create(List<Account> accounts) {
+        if (accounts == null) {
+            throw new AccountException(MicroserviceException.ErrorTypes.validation);
+        }
+        
+        List<Account> saved = AccountConvertor.entityListToModels(accountRepository.save(AccountConvertor.modelsListToEntities(accounts)));
+        log.info("Create List Accounts: " + saved.toString());
+        return saved;
     }
 
     public Account get(Long id) {
@@ -73,21 +84,19 @@ public class AccountService {
         return accounts;
     }
 
-    public void updateAllAccountsOfClient (Iterable<Account> accounts, Long clientId) {
+    public void updateAllAccountsOfClient(Iterable<Account> accounts, Long clientId) {
         //TODO delete all before bulk update
-        validations.allAccountsHasClientId(accounts,clientId);
+        validations.allAccountsHasClientId(accounts, clientId);
         Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
         accountRepository.save(accountEntities);
         log.info("Bulk account update of client with ID {} : {}", clientId, accounts);
     }
 
-    public void deleteAllAccountsOfClient (Long clientId) {
+    public void deleteAllAccountsOfClient(Long clientId) {
         Iterable<Account> accounts = findByClientId(clientId);
         Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
         accountRepository.delete(accountEntities);
         log.info("Bulk account delete of client with ID {} : {}", clientId, accounts);
     }
-
-
 
 }

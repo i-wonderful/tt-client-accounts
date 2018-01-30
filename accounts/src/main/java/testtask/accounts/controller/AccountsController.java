@@ -1,6 +1,8 @@
 package testtask.accounts.controller;
 
 import io.swagger.annotations.Api;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +53,12 @@ public class AccountsController {
         account = accountService.create(account);
         return new ResponseEntity<>(account, HttpStatus.OK);
 
+    }
+
+    @PostMapping("/list")
+    public ResponseEntity<List<Account>> createList(@RequestBody Account[] accounts) {
+         List<Account> created = accountService.create(Arrays.asList(accounts));
+         return new ResponseEntity<>(created, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
