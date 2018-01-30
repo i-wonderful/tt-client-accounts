@@ -1,4 +1,3 @@
-
 package testtask.accounts.controller;
 
 import java.util.Arrays;
@@ -45,7 +44,7 @@ public class AccountsControllerMockTests {
 
     private JacksonTester<Account> accountJTester;
     JacksonTester<Account[]> listAccountJTester;
-            
+
     @Before
     public void init() {
         // initialize Jackson Tester
@@ -94,18 +93,48 @@ public class AccountsControllerMockTests {
         Account[] accounts = listAccountJTester.parseObject(response.getContentAsString());
         assertThat(accounts).isNotNull().isNotEmpty();
         assertThat(accounts).containsExactlyInAnyOrder(account1, account2);
-        
+
     }
-    
+
     @Test
-    public void getBadRequestErrorThenGetAccountByNullClientId() throws Exception{
-        
+    public void getBadRequestErrorThenGetAccountByNullClientId() throws Exception {
+
         // then
         MockHttpServletResponse response = mockMvc.perform(get(URL + "/ClientId/"))
                 .andDo(print())
                 .andReturn().getResponse();
-        
+
         // when
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @Test
+    public void deleteAccountByAccountId() throws Exception {
+
+        // given
+        final long accountId = 123L;
+
+        // then
+        MockHttpServletResponse response = mockMvc.perform(delete(URL + "/" + accountId))
+                .andDo(print())
+                .andReturn().getResponse();
+        // when
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+
+    }
+
+    @Test
+    public void deleteAccountsByClientId() throws Exception {
+        final long clientId = 558L;
+
+        // then
+        MockHttpServletResponse responce = mockMvc.perform(delete(URL + "/clientId/" + clientId))
+                .andDo(print())
+                .andReturn().getResponse();
+
+        // when
+        assertThat(responce.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+//    public void delete
 }

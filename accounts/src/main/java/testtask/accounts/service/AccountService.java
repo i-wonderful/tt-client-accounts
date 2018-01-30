@@ -1,5 +1,7 @@
 package testtask.accounts.service;
 
+import java.util.Arrays;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,7 +80,7 @@ public class AccountService {
     public Account get(Long id) {
         AccountEntity accountEntity = repository.findOne(id);
         if (accountEntity == null) {
-            throw new AccountException(AccountException.ErrorTypes.not_found,
+            throw new AccountException(ErrorTypes.not_found,
                     "Account with id: " + id + " not found");
         }
         Account account = AccountConvertor.entityToModel(accountEntity);
@@ -122,6 +124,14 @@ public class AccountService {
         repository.delete(id);
     }
 
+    public void delete(Account[] accounts) {
+        if (accounts == null) {
+            throw new AccountException(ErrorTypes.null_argument);
+        }
+        log.info("Delete list accounts: {} ", Arrays.toString(accounts));
+        repository.delete(AccountConvertor.modelsListToEntities(Arrays.asList(accounts)));
+    }
+
     public List<Account> getAll() {
         Iterable<AccountEntity> accountEntities = repository.findAll();
         List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
@@ -147,11 +157,18 @@ public class AccountService {
         log.info("Bulk account update of client with ID {} : {}", clientId, accounts);
     }
 
+    /**
+     *
+     * @param clientId
+     */
     public void deleteAllAccountsOfClient(Long clientId) {
-        Iterable<Account> accounts = findByClientId(clientId);
-        Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
+        if (clientId == null) {
+            throw new AccountException(ErrorTypes.null_argument);
+        }
+
+        Iterable<AccountEntity> accountEntities = repository.findByClientId(clientId);//AccountConvertor.modelsListToEntities(accounts);
         repository.delete(accountEntities);
-        log.info("Bulk account delete of client with ID {} : {}", clientId, accounts);
+        log.info("Bulk account delete of client with ID {} : {}", clientId, accountEntities);
     }
 
 }

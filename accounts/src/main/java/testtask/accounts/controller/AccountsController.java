@@ -19,7 +19,6 @@ import testtask.accounts.service.AccountService;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/accounts")
 @Api(value = "accounts", description = "Rest API for accounts operations", tags = "Accounts API")
@@ -45,7 +44,7 @@ public class AccountsController {
 
     @GetMapping("/ClientId/{id}")
     public ResponseEntity<List<Account>> getByClientId(@PathVariable("id") Long clientId) {
-        return new ResponseEntity<>( accountService.findByClientId(clientId), HttpStatus.OK);
+        return new ResponseEntity<>(accountService.findByClientId(clientId), HttpStatus.OK);
     }
 
     @PostMapping()
@@ -57,8 +56,8 @@ public class AccountsController {
 
     @PostMapping("/list")
     public ResponseEntity<List<Account>> createList(@RequestBody Account[] accounts) {
-         List<Account> created = accountService.create(Arrays.asList(accounts));
-         return new ResponseEntity<>(created, HttpStatus.OK);
+        List<Account> created = accountService.create(Arrays.asList(accounts));
+        return new ResponseEntity<>(created, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -71,6 +70,18 @@ public class AccountsController {
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         accountService.delete(accountService.get(id));
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/clientId/{clientId}")
+    public ResponseEntity deleteByClientId(@PathVariable("clientId") Long clientId) {
+        accountService.deleteAllAccountsOfClient(clientId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/list")
+    public ResponseEntity delete(@RequestBody Account[] accounts) {
+        accountService.delete(accounts);
         return new ResponseEntity(HttpStatus.OK);
     }
 

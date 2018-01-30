@@ -68,9 +68,9 @@ public class AccountsServiceIntegrationTests {
 
     @Test
     public void canCreateAccount() {
-        Account account = createAccountModel(23423, Currency.USD, 55L, "New Wonderful Account");
+        Account createdAccount = createAccountModel(23423, Currency.USD, 55L, "New Wonderful Account");
 
-        Account createdAccount = service.create(account);
+        createdAccount = service.create(createdAccount);
 
         // check success saved
         assertThat(createdAccount).isNotNull();
@@ -147,7 +147,13 @@ public class AccountsServiceIntegrationTests {
 
     }
     
+    @Test
     public void canDeleteAllAccountsByClientId(){
     
+        assertThat(repository.exists(account.getId())).isTrue();
+        
+        service.deleteAllAccountsOfClient(account.getClientId());
+        
+        assertThat(repository.exists(account.getId())).isFalse();
     }
 }
