@@ -7,7 +7,8 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 /**
  *
@@ -15,10 +16,13 @@ import java.text.NumberFormat;
  */
 public class JsonBigDecimalSerializer extends JsonSerializer<BigDecimal> {
 
-    private final NumberFormat format = NumberFormat.getNumberInstance();
+    private final DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance();
 
     public JsonBigDecimalSerializer() {
          format.setGroupingUsed(false);
+         DecimalFormatSymbols separator = new DecimalFormatSymbols();
+         separator.setDecimalSeparator('.');
+         format.setDecimalFormatSymbols(separator);
     }
 
     @Override
