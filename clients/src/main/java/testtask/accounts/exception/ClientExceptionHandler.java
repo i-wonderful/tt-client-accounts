@@ -1,6 +1,9 @@
 package testtask.accounts.exception;
 
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +37,16 @@ public class ClientExceptionHandler {
 
         ApiErrorDto apiErrorDto = new ApiErrorDto(ex);
         responce.setStatus(apiErrorDto.getStatus().value());
+        return apiErrorDto;
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ApiErrorDto handleDbException(DataAccessException ex, HttpServletResponse responce) {
+
+        ApiErrorDto apiErrorDto = new ApiErrorDto(MicroserviceException.ErrorTypes.db_error, ex.getLocalizedMessage());
+
+        responce.setStatus(apiErrorDto.getStatus().value());
+
         return apiErrorDto;
     }
 }

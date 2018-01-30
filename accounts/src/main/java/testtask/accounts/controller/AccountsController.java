@@ -1,5 +1,6 @@
 package testtask.accounts.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,12 @@ public class AccountsController {
         return new ResponseEntity<>(account, HttpStatus.OK);
 
     }
+    
+    @PostMapping("/list")
+    public ResponseEntity<List<Account>> createList(@RequestBody Account[] accounts) {
+         List<Account> created = accountService.create(Arrays.asList(accounts));
+         return new ResponseEntity<>(created, HttpStatus.OK);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable Long id, @RequestBody Account account) {
@@ -56,7 +63,7 @@ public class AccountsController {
         accountService.update(account);
         return new ResponseEntity(HttpStatus.OK);
     }
-
+    
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         accountService.delete(accountService.get(id));

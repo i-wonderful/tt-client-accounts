@@ -12,7 +12,7 @@ public class ClientException extends MicroserviceException {
         super(ex);
         clientId = null;
     }
-
+    
     public ClientException(final Long clientId, ErrorTypes type) {
         super(type, getStandartInfo(type, clientId));
         this.clientId = clientId;

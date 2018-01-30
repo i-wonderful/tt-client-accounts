@@ -20,6 +20,10 @@ import testtask.accounts.service.ClientService;
 import testtask.accounts.exception.ApiErrorDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import org.hibernate.exception.SQLGrammarException;
+import org.mockito.Matchers;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -171,6 +175,22 @@ public class ClientControllerMockTests {
         // then
         assertThat(responce.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         
+    }
+    
+    @Test
+    public void getInternalError() throws Exception{
+    
+        // given
+        BDDMockito.given(clientService.findOne(Matchers.any())).willThrow(new InvalidDataAccessResourceUsageException("Database is not available"));
         
+        // when  
+        MockHttpServletResponse responce = mockMvc.perform(get("/client/1"))
+                .andDo(print())
+                .andReturn().getResponse();
+
+        // then
+        assertThat(responce.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        ApiErrorDto errorDto = testerErrorJson.parseObject(responce.getContentAsString());
+        assertThat(errorDto.getErrType()).isEqualTo(MicroserviceException.ErrorTypes.db_error.toString());
     }
 }
