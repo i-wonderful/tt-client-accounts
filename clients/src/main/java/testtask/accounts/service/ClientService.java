@@ -90,6 +90,10 @@ public class ClientService {
      * @return
      */
     public Client create(Client client) {
+        if (client == null) {
+            throw new ClientException(MicroserviceException.ErrorTypes.validation, "Null client not allowed");
+        }
+        
         if (client.getId() != null) {
             throw new ClientException(client.getId(), MicroserviceException.ErrorTypes.validation, "Can't create client with predefined id");
         }

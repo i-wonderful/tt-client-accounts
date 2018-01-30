@@ -12,7 +12,7 @@ public class ClientException extends MicroserviceException {
         super(ex);
         clientId = null;
     }
-    
+
     public ClientException(final Long clientId, ErrorTypes type) {
         super(type, getStandartInfo(type, clientId));
         this.clientId = clientId;
@@ -43,6 +43,9 @@ public class ClientException extends MicroserviceException {
                 break;
             case validation:
                 errorMessage = "Validation Error";
+                break;
+            case null_argument:
+                errorMessage = "Null Argument not allowed";
                 break;
             case bad_mks_request:
                 errorMessage = "Resource request exception";

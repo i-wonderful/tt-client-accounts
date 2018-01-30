@@ -36,6 +36,9 @@ public class AccountException extends MicroserviceException {
             case business:
                 errorMessage = "Busness Error";
                 break;
+            case null_argument:
+                errorMessage = "Null Argument not allowed";
+                break;
             case validation:
                 errorMessage = "Validation Error";
                 break;

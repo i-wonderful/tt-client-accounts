@@ -24,6 +24,9 @@ public class ApiErrorDto {
             case validation:
                 status = HttpStatus.NOT_ACCEPTABLE;
                 break;
+            case null_argument:
+                status = HttpStatus.BAD_REQUEST;
+                break;
             case not_found:
                 status = HttpStatus.NOT_FOUND;
                 break;
@@ -44,7 +47,7 @@ public class ApiErrorDto {
     public ApiErrorDto(MicroserviceException e) {
         this(e.getType(), e.getInfo());
     }
-    
+
     public ApiErrorDto(ResourceAccessException exp) {
         this(MicroserviceException.ErrorTypes.bad_mks_request, exp.getLocalizedMessage());
     }
@@ -52,9 +55,7 @@ public class ApiErrorDto {
 //public ApiErrorDto(DataAccessException ex) {
 //this()
 //    }
-    
 //    public ApiErrorDto(Da)
-
     public HttpStatus getStatus() {
         return status;
     }

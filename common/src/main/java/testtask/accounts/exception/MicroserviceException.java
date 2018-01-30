@@ -12,6 +12,7 @@ public class MicroserviceException extends RuntimeException {
     public enum ErrorTypes {
         business,
         validation,
+        null_argument,
         not_found,
         bad_mks_request,
         db_error,
