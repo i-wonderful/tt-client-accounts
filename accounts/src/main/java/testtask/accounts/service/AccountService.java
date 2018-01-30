@@ -94,9 +94,9 @@ public class AccountService {
     }
 
     /**
-     * Delete Account 
-     * 
-     * @param account 
+     * Delete Account
+     *
+     * @param account
      */
     public void delete(Account account) {
         if (account == null) {
@@ -130,6 +130,9 @@ public class AccountService {
     }
 
     public List<Account> findByClientId(Long clientId) {
+        if (clientId == null) {
+            throw new AccountException(ErrorTypes.null_argument);
+        }
         Iterable<AccountEntity> accountEntities = repository.findByClientId(clientId);
         List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
         log.info("Find all accounts of client with ID {} : {}", clientId, accounts);

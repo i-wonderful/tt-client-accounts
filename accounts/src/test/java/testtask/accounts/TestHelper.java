@@ -19,7 +19,7 @@ import testtask.accounts.model.Currency;
 public class TestHelper {
 
     /**
-     * Create new Model obj.
+     * Create new Model object.
      *
      * @param balance
      * @param currency
@@ -28,8 +28,23 @@ public class TestHelper {
      * @return
      */
     public static Account createAccountModel(double balance, Currency currency, Long clientId, String name) {
+        return createAccountModel(null, balance, currency, clientId, name);
+    }
+
+    /**
+     * Create Model Object
+     * 
+     * @param id
+     * @param balance
+     * @param currency
+     * @param clientId
+     * @param name
+     * @return
+     */
+    public static Account createAccountModel(Long id, double balance, Currency currency, Long clientId, String name) {
 
         Account account = new Account();
+        account.setId(id);
         account.setBalance(new BigDecimal(balance));
         account.setCurrency(currency);
         account.setClientId(clientId);
@@ -81,9 +96,9 @@ public class TestHelper {
 
     /**
      * Create Matcher for AccountException.
-     * 
+     *
      * @param errType
-     * @return 
+     * @return
      */
     public static CustomMatcher<AccountException> expMatcher(ErrorTypes errType) {
         return new CustomMatcher<AccountException>("Check AccountException for type " + errType.name()) {

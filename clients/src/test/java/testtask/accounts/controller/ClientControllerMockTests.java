@@ -25,7 +25,7 @@ import org.mockito.Matchers;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.web.client.ResourceAccessException;
 import testtask.accounts.exception.ClientExceptionHandler;
@@ -107,9 +107,10 @@ public class ClientControllerMockTests {
     public void canCreateNewClient() throws Exception {
 
         // given
+        final long newClientId = 3L;
         final Client client = new Client("Christopfer", "Nolan");
         BDDMockito.given(clientService.create(BDDMockito.any())).willAnswer((invocation) -> {
-            client.setId(2L);
+            client.setId(newClientId);
             return client;
         });
 
@@ -124,7 +125,7 @@ public class ClientControllerMockTests {
         assertThat(responce.getStatus()).isEqualTo(HttpStatus.CREATED.value());
 
         Client savedClient = jacksonTester.parseObject(responce.getContentAsString());
-        assertThat(savedClient.getId()).isEqualTo(2L);
+        assertThat(savedClient.getId()).isEqualTo(newClientId);
         assertThat(savedClient.getFirstName()).isEqualTo(client.getFirstName());
         assertThat(savedClient.getLastName()).isEqualTo(client.getLastName());
     }

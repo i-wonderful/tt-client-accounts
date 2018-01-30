@@ -95,17 +95,17 @@ public class AccountsControllerTest {
     public void create() throws Exception {
     }
 
-    @Test
-//    @Ignore
-    public void getById() throws Exception {
-        MockHttpServletResponse response = mockMvc
-                .perform(get("/accounts/" + account.getId()))
-                .andReturn().getResponse();
-
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        assertThat(response.getContentAsString()).isEqualTo(jacksonTester.write(account).getJson());
-    }
+//    @Test
+////    @Ignore
+//    public void getById() throws Exception {
+//        MockHttpServletResponse response = mockMvc
+//                .perform(get("/accounts/" + account.getId()))
+//                .andReturn().getResponse();
+//
+//        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+//        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
+//        assertThat(response.getContentAsString()).isEqualTo(jacksonTester.write(account).getJson());
+//    }
 
     @Test
     public void getErrorDtoWhenRequestNotExistingAccount() throws Exception {
