@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Deprecated
 public class RestAPITests {
 
     @Autowired
@@ -31,13 +32,13 @@ public class RestAPITests {
 //    public void setUp() throws Exception {
 //    }
 
-    @Test
-    @Ignore
-    public void testGo() throws Exception {
-        mockMvc.perform(get("/client/go"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("I'm client controller!")));
-    }
+//    @Test
+//    @Ignore
+//    public void testGo() throws Exception {
+//        mockMvc.perform(get("/client/go"))
+//                .andExpect(status().isOk())
+//                .andExpect(content().string(containsString("I'm client controller!")));
+//    }
 
 //    @Test
 //    public void testAccountsAll() throws Exception {
