@@ -83,7 +83,7 @@ public class ClientService {
         
         return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
-
+ 
     /**
      * Update Client.
      *
