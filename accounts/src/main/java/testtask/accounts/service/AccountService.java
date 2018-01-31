@@ -1,6 +1,5 @@
 package testtask.accounts.service;
 
-import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,8 +9,10 @@ import testtask.accounts.dao.AccountRepository;
 import testtask.accounts.exception.AccountException;
 import testtask.accounts.model.Account;
 
+import java.util.Arrays;
 import java.util.List;
-import static testtask.accounts.exception.MicroserviceException.*;
+
+import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.

@@ -7,11 +7,12 @@ import testtask.accounts.dao.ClientConverter;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.exception.ClientException;
-import static testtask.accounts.exception.MicroserviceException.*;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
 
 import java.util.List;
+
+import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.

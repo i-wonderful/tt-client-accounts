@@ -1,7 +1,5 @@
 package testtask.accounts.service;
 
-import java.util.Arrays;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,8 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import testtask.accounts.exception.ApiErrorDto;
 import testtask.accounts.exception.ClientException;
-import static testtask.accounts.exception.MicroserviceException.*;
 import testtask.accounts.model.Account;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 
 /**
  * Rest Client for Accounts Mks.

@@ -1,8 +1,6 @@
 package testtask.accounts.service;
 
-import java.util.Date;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,7 +16,13 @@ import testtask.accounts.dao.ClientConverter;
 import testtask.accounts.dao.ClientEntity;
 import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.model.Client;
-import static testtask.accounts.TestHelper.*;
+
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static testtask.accounts.TestHelper.expNotFoundMatcher;
+import static testtask.accounts.TestHelper.expValidationMatcher;
 
 /**
  *

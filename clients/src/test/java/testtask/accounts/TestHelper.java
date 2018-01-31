@@ -3,7 +3,8 @@ package testtask.accounts;
 
 import org.hamcrest.CustomMatcher;
 import testtask.accounts.exception.ClientException;
-import static testtask.accounts.exception.MicroserviceException.*;
+
+import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 
 /**
  *

@@ -1,9 +1,5 @@
 package testtask.accounts.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-import static org.assertj.core.api.Assertions.*;
-import org.hamcrest.core.StringContains;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -11,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
-import static org.mockito.Matchers.*;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpEntity;
@@ -19,10 +14,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import static testtask.accounts.TestHelper.*;
 import testtask.accounts.exception.ApiErrorDto;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Currency;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static testtask.accounts.TestHelper.expBadMksRequestMatcher;
 
 /**
  *

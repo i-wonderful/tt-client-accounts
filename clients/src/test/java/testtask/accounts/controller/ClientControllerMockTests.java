@@ -1,7 +1,6 @@
 package testtask.accounts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,23 +9,29 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.ResourceAccessException;
+import testtask.accounts.exception.ApiErrorDto;
+import testtask.accounts.exception.ClientException;
+import testtask.accounts.exception.ClientExceptionHandler;
 import testtask.accounts.model.Client;
 import testtask.accounts.service.ClientService;
-import testtask.accounts.exception.ApiErrorDto;
-import testtask.accounts.exception.ClientExceptionHandler;
-import testtask.accounts.exception.ClientException;
+
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static testtask.accounts.exception.MicroserviceException.*;
+import static org.mockito.Matchers.anyLong;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 
 /**
  *

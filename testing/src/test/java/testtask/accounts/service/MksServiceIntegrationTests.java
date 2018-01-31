@@ -1,16 +1,6 @@
 package testtask.accounts.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.CustomMatcher;
-
-//import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import testtask.accounts.AccountsApplication;
 import testtask.accounts.ClientsApplication;
 import testtask.accounts.dao.AccountConvertor;
 import testtask.accounts.dao.AccountEntity;
@@ -34,6 +23,21 @@ import testtask.accounts.exception.MicroserviceException;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
 import testtask.accounts.model.Currency;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+//import static org.hamcrest.MatcherAssert.*;
 
 /**
  *
