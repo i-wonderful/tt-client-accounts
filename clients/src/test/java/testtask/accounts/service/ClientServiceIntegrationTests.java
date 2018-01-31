@@ -35,42 +35,45 @@ public class ClientServiceIntegrationTests {
     @Autowired
     private ClientRepository repository;
 
+    /* Test Data */
+    private ClientEntity entity;
+    private Client entityModel;
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    
-    /* Test Data */
-    private Client clientData;
 
     @Before
     public void init() {
-        ClientEntity entity = new ClientEntity();
+        entity = new ClientEntity();
         entity.setFirstName("Matthew");
         entity.setLastName("Murdock");
         entity.setMiddleName("Michael");
         entity = repository.save(entity);
-        clientData = ClientConverter.entityToModel(entity);
+        entityModel = ClientConverter.entityToModel(entity);
     }
 
     @After
     public void clear() {
-        repository.deleteAll();
+        if (repository.exists(entity.getId())) {
+            repository.delete(entity.getId());
+        }
     }
 
     @Test
     public void testFindFromDb() {
 
-        ClientEntity find = repository.findOne(clientData.getId());
+        ClientEntity find = repository.findOne(entity.getId());
         assertNotNull(find);
-        assertEquals(find.getFirstName(), clientData.getFirstName());
-        assertEquals(find.getLastName(), clientData.getLastName());
+        assertEquals(find.getFirstName(), entity.getFirstName());
+        assertEquals(find.getLastName(), entity.getLastName());
     }
 
     @Test
     public void findExistedClientById() {
-        Client find = service.findOne(clientData.getId());
+        Client find = service.findOne(entityModel.getId());
         assertNotNull(find);
-        assertEquals(clientData.getFirstName(), find.getFirstName());
-        assertEquals(clientData.getLastName(), find.getLastName());
+        assertEquals(entityModel.getFirstName(), find.getFirstName());
+        assertEquals(entityModel.getLastName(), find.getLastName());
     }
 
     /**
@@ -118,10 +121,10 @@ public class ClientServiceIntegrationTests {
     public void canUpdateExistedClient() {
 
         final String newMiddleName = "Daredevil";
-        clientData.setMiddleName(newMiddleName);
-        service.update(clientData.getId(), clientData);
+        entityModel.setMiddleName(newMiddleName);
+        service.update(entityModel.getId(), entityModel);
 
-        Client clientFromDb = ClientConverter.entityToModel(repository.findOne(clientData.getId()));
+        Client clientFromDb = ClientConverter.entityToModel(repository.findOne(entityModel.getId()));
         assertEquals(newMiddleName, clientFromDb.getMiddleName());
     }
 
@@ -150,6 +153,14 @@ public class ClientServiceIntegrationTests {
         service.update(notExistedId, client);
     }
 
+    @Test
+    public void testDelete() {
+        service.delete(entityModel.getId());
+
+        assertFalse(repository.exists(entityModel.getId()));
+
+    }
+
     /**
      * Test throw not found exception when try to delete not existed client.
      */
@@ -163,9 +174,9 @@ public class ClientServiceIntegrationTests {
     }
 
     @Test
-    public void throwResourceExpWhenTryToUseNotExistedMicroservice() {
+    public void throwResourceExpWhenTryToUseExistedMicroservice(){
         thrown.expect(ResourceAccessException.class);
-
-        service.findWithAccounts(clientData.getId());
+        
+        service.findWithAccounts(entityModel.getId());
     }
 }

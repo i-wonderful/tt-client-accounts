@@ -18,10 +18,6 @@ public class ClientException extends MicroserviceException {
         this.clientId = clientId;
     }
 
-    public ClientException(ErrorTypes errorType) {
-        this(errorType, getStandartInfo(errorType, null));
-    }
-    
     public ClientException(ErrorTypes type, String info) {
         super(type, info);
         this.clientId = null;
@@ -52,13 +48,7 @@ public class ClientException extends MicroserviceException {
                 errorMessage = "Null Argument not allowed";
                 break;
             case bad_mks_request:
-                errorMessage = "Resourse request exception";
-                break;
-            case mks_response_null:
-                errorMessage = "Mks response body is null";
-                break;
-            case mks_response_unknown:
-                errorMessage = "Mks response body is unknown type";
+                errorMessage = "Resource request exception";
                 break;
             case other:
                 errorMessage = "Some other Error";

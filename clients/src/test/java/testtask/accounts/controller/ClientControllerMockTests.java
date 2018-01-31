@@ -12,21 +12,25 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import testtask.accounts.model.Client;
 import testtask.accounts.service.ClientService;
 import testtask.accounts.exception.ApiErrorDto;
-import testtask.accounts.exception.ClientExceptionHandler;
-import testtask.accounts.exception.ClientException;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
+import org.hibernate.exception.SQLGrammarException;
+import org.mockito.Matchers;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static testtask.accounts.exception.MicroserviceException.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.web.client.ResourceAccessException;
+import testtask.accounts.exception.ClientExceptionHandler;
+import testtask.accounts.exception.ClientException;
+import testtask.accounts.exception.MicroserviceException;
 
 /**
  *
@@ -44,7 +48,7 @@ public class ClientControllerMockTests {
     private ClientController controller;
 
     private JacksonTester<Client> jacksonTester;
-    private JacksonTester<ApiErrorDto> apiErrorJacksonTester;
+    private JacksonTester<ApiErrorDto> testerErrorJson;
 
     @Before
     public void init() {
@@ -63,7 +67,7 @@ public class ClientControllerMockTests {
         // given
         final long notExistedClientId = 435435446L;
         BDDMockito.given(clientService.findOne(notExistedClientId))
-                .willThrow(new ClientException(notExistedClientId, ErrorTypes.not_found));
+                .willThrow(new ClientException(notExistedClientId, MicroserviceException.ErrorTypes.not_found));
 
         // when
         MockHttpServletResponse response = mockMvc.perform(get("/client/" + notExistedClientId))
@@ -72,9 +76,9 @@ public class ClientControllerMockTests {
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
-        ApiErrorDto errorDto = apiErrorJacksonTester.parseObject(response.getContentAsString());
-        assertThat(errorDto.getErrType()).isEqualTo(ErrorTypes.not_found.name());
-        assertThat(errorDto.getMessage()).isEqualTo(ClientException.getStandartInfo(ErrorTypes.not_found, notExistedClientId));
+        ApiErrorDto errorDto = testerErrorJson.parseObject(response.getContentAsString());
+        assertThat(errorDto.getErrType()).isEqualTo(MicroserviceException.ErrorTypes.not_found.name());
+        assertThat(errorDto.getMessage()).isEqualTo(ClientException.getStandartInfo(MicroserviceException.ErrorTypes.not_found, notExistedClientId));
     }
 
     @Test
@@ -158,46 +162,28 @@ public class ClientControllerMockTests {
     }
 
     @Test
-    public void getErrorWhenDeleteClientAndExternalMksReturnError() throws Exception {
-        // given
-        final ClientException exp = new ClientException(ErrorTypes.bad_mks_request, "This is very sad");
-        BDDMockito.willThrow(exp).given(clientService).delete(anyLong());
-
-        // when
-        MockHttpServletResponse response = mockMvc.perform(delete("/client/1"))
-                .andDo(print())
-                .andReturn().getResponse();
-
-        // then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        ApiErrorDto errorDto = apiErrorJacksonTester.parseObject(response.getContentAsString());
-        assertThat(errorDto.getMessage()).isEqualTo(exp.getMessage());
-        assertThat(errorDto.getErrType()).isEqualTo(exp.getType().toString());
-    }
-
-    @Test
     public void getErrorWhenMksAccountsInNotAvailable() throws Exception {
 
         final long clientId = 1L;
         // given
         BDDMockito.given(clientService.findWithAccounts(clientId)).willThrow(new ResourceAccessException("Resource Exception"));
-
+        
         // when
         MockHttpServletResponse responce = mockMvc.perform(get("/client/withAccounts/" + clientId))
                 .andDo(print())
                 .andReturn().getResponse();
-
+        
         // then
         assertThat(responce.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
+        
     }
-
+    
     @Test
-    public void getErrorThenInvalidDataAccess() throws Exception {
-
+    public void getInternalError() throws Exception{
+    
         // given
-        BDDMockito.given(clientService.findOne(anyLong())).willThrow(new InvalidDataAccessResourceUsageException("Database is not available"));
-
+        BDDMockito.given(clientService.findOne(Matchers.any())).willThrow(new InvalidDataAccessResourceUsageException("Database is not available"));
+        
         // when  
         MockHttpServletResponse responce = mockMvc.perform(get("/client/1"))
                 .andDo(print())
@@ -205,7 +191,7 @@ public class ClientControllerMockTests {
 
         // then
         assertThat(responce.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        ApiErrorDto errorDto = apiErrorJacksonTester.parseObject(responce.getContentAsString());
-        assertThat(errorDto.getErrType()).isEqualTo(ErrorTypes.db_error.toString());
+        ApiErrorDto errorDto = testerErrorJson.parseObject(responce.getContentAsString());
+        assertThat(errorDto.getErrType()).isEqualTo(MicroserviceException.ErrorTypes.db_error.toString());
     }
 }

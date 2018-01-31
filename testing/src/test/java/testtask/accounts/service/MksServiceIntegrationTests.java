@@ -2,7 +2,6 @@ package testtask.accounts.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.CustomMatcher;
@@ -40,7 +39,7 @@ import testtask.accounts.model.Currency;
  * @author Olga Grazhdanova <dvl.java@gmail.com> at Jan 28, 2018
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {ClientsApplication.class/*, AccountsApplication.class*/})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {ClientsApplication.class, AccountsApplication.class})
 @TestPropertySource(locations = "classpath:application.properties")
 @WithMockUser
 public class MksServiceIntegrationTests {
@@ -89,7 +88,12 @@ public class MksServiceIntegrationTests {
         account2.setClientId(clientWithAccountsEntity.getId());
 
         List<AccountEntity> accountsEntities = new ArrayList<>();
-        accountRepository.save(Arrays.asList(account1 ,account2)).forEach(accountsEntities::add);
+        accountRepository.save(new ArrayList<AccountEntity>() {
+            {
+                add(account1);
+                add(account2);
+            }
+        }).forEach(accountsEntities::add);
 
         clientWithAccounts = ClientConverter.entityToModel(clientWithAccountsEntity);
         accounts = AccountConvertor.entityListToModels(accountsEntities);
@@ -120,25 +124,15 @@ public class MksServiceIntegrationTests {
     }
 
     @Test
-    public void findClientWitoutAccounts() {
-        Client clientFind = clientService.findWithAccounts(clientWithoutAccounts.getId());
-
+    public void findClientWitoutAccounts(){
+    Client clientFind = clientService.findWithAccounts(clientWithoutAccounts.getId());
+    
         assertNotNull(clientFind);
         assertNotNull(clientFind.getAccounts());
-
+        
         assertTrue(clientFind.getAccounts().isEmpty());
     }
 
-    @Test
-    public void deleteClientWithAccounts(){
-        
-        final long clientId = clientWithAccounts.getId();
-        clientService.delete(clientId);
-        
-        assertThat("Client is not delete by Id", clientRepository.exists(clientId), is(false));
-        assertThat("Accounts was not deleted by clientId", accountRepository.findByClientId(clientId), hasSize(0));
-    }
-    
     /**
      * Create Matcher for not found exception with standard message.
      *
