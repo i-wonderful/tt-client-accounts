@@ -29,14 +29,14 @@ public class AccountConvertor {
         return accountEntity;
     }
 
-    public static Iterable<Account> entityListToModels (Iterable<AccountEntity> accountEntityList) {
+    public static List<Account> entityListToModels (Iterable<AccountEntity> accountEntityList) {
         List<Account> accountList = new ArrayList<>();
         accountEntityList.forEach(accountEntity ->
                 accountList.add(AccountConvertor.entityToModel(accountEntity)));
         return accountList;
     }
 
-    public static Iterable<AccountEntity> modelsListToEntities (Iterable<Account> accountList) {
+    public static List<AccountEntity> modelsListToEntities (Iterable<Account> accountList) {
         List<AccountEntity> entityList = new ArrayList<>();
         accountList.forEach(account ->
                 entityList.add(AccountConvertor.modelToEntity(account)));

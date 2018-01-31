@@ -2,7 +2,6 @@ package testtask.accounts.service;
 
 import org.hamcrest.CustomMatcher;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -64,7 +62,7 @@ public class MksServiceIntegrationTests {
 
     /* Test Data */
     private Client clientWithAccounts;
-    private Iterable<Account> accounts;
+    private List<Account> accounts;
     private Client clientWithoutAccounts;
 
     @Before
@@ -102,7 +100,7 @@ public class MksServiceIntegrationTests {
     }
 
     @Test
-    @Ignore
+//    @Ignore
     public void findClientWithAccounts() {
         Client clientFind = clientService.findWithAccounts(clientWithAccounts.getId());
 
@@ -114,7 +112,11 @@ public class MksServiceIntegrationTests {
         assertEquals(clientWithAccounts.getLastName(), clientFind.getLastName());
 
         // check accounts
-        assertThat(clientFind.getAccounts(), containsInAnyOrder(accounts));
+        assertEquals(clientFind.getAccounts(), accounts);
+
+//        for (Account account : accounts) {
+//            assertThat(clientFind.getAccounts(), containsInAnyOrder(account));
+//        }
     }
 
     @Test

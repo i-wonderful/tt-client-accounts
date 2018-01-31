@@ -9,6 +9,8 @@ import testtask.accounts.dao.AccountRepository;
 import testtask.accounts.exception.AccountException;
 import testtask.accounts.model.Account;
 
+import java.util.List;
+
 import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 
 /**
@@ -49,7 +51,7 @@ public class AccountService {
      * @param accounts
      * @return
      */
-    public Iterable<Account> create(Iterable<Account> accounts) {
+    public List<Account> create(List<Account> accounts) {
         validations.createValidations(accounts);
         Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
         accountEntities = repository.save(accountEntities);
@@ -100,31 +102,31 @@ public class AccountService {
         repository.delete(id);
     }
 
-    public void delete(Iterable<Account> accounts) {
+    public void delete(List<Account> accounts) {
         validations.validateNotNull(accounts,"can't delete null accounts");
         log.info("Delete list accounts: {} ", accounts);
         repository.delete(AccountConvertor.modelsListToEntities(accounts));
     }
 
-    public Iterable<Account> getAll() {
+    public List<Account> getAll() {
         Iterable<AccountEntity> accountEntities = repository.findAll();
-        Iterable<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
+        List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
         log.info("Get all accounts: " + accounts);
         return accounts;
     }
 
-    public Iterable<Account> findByClientId(Long clientId) {
+    public List<Account> findByClientId(Long clientId) {
         validations.validateNotNull(clientId,"client id is null");
-        Iterable<AccountEntity> accountEntities = repository.findByClientId(clientId);
-        Iterable<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
+        List<AccountEntity> accountEntities = repository.findByClientId(clientId);
+        List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
         log.info("Find all accounts of client with ID {} : {}", clientId, accounts);
         return accounts;
     }
 
-    public void updateAllAccountsOfClient(Iterable<Account> accounts, Long clientId) {
+    public void updateAllAccountsOfClient(List<Account> accounts, Long clientId) {
         //TODO delete all before bulk update
         validations.allAccountsHasClientId(accounts, clientId);
-        Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
+        List<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
         repository.save(accountEntities);
         log.info("Bulk account update of client with ID {} : {}", clientId, accounts);
     }
@@ -135,7 +137,7 @@ public class AccountService {
      */
     public void deleteAllAccountsOfClient(Long clientId) {
         validations.validateNotNull(clientId,"clientId is null");
-        Iterable<AccountEntity> accountEntities = repository.findByClientId(clientId);
+        List<AccountEntity> accountEntities = repository.findByClientId(clientId);
         repository.delete(accountEntities);
         log.info("Bulk account delete of client with ID {} : {}", clientId, accountEntities);
     }

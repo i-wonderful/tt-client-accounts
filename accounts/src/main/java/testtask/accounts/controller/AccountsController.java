@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import testtask.accounts.model.Account;
 import testtask.accounts.service.AccountService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/accounts")
 @Api(value = "accounts", description = "Rest API for accounts operations", tags = "Accounts API")
@@ -28,7 +30,7 @@ public class AccountsController {
     }
 
     @GetMapping("")
-    public Iterable getAll() {
+    public List getAll() {
         return accountService.getAll();
     }
 
@@ -39,7 +41,7 @@ public class AccountsController {
     }
 
     @GetMapping("/ClientId/{id}")
-    public ResponseEntity<Iterable<Account>> getByClientId(@PathVariable("id") Long clientId) {
+    public ResponseEntity<List<Account>> getByClientId(@PathVariable("id") Long clientId) {
         return new ResponseEntity<>(accountService.findByClientId(clientId), HttpStatus.OK);
     }
 
@@ -51,8 +53,8 @@ public class AccountsController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<Iterable<Account>> createList(@RequestBody Iterable<Account> accounts) {
-        Iterable<Account> created = accountService.create(accounts);
+    public ResponseEntity<List<Account>> createList(@RequestBody List<Account> accounts) {
+        List<Account> created = accountService.create(accounts);
         return new ResponseEntity<>(created, HttpStatus.OK);
     }
 
@@ -76,7 +78,7 @@ public class AccountsController {
     }
 
     @DeleteMapping("/list")
-    public ResponseEntity delete(@RequestBody Iterable<Account> accounts) {
+    public ResponseEntity delete(@RequestBody List<Account> accounts) {
         accountService.delete(accounts);
         return new ResponseEntity(HttpStatus.OK);
     }

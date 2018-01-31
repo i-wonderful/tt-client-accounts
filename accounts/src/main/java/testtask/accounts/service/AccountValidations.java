@@ -8,6 +8,7 @@ import testtask.accounts.model.Account;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -45,7 +46,7 @@ public class AccountValidations {
         }
     }
 
-    public void allAccountsHasClientId(Iterable<Account> accountList, Long clientId) throws AccountException {
+    public void allAccountsHasClientId(List<Account> accountList, Long clientId) throws AccountException {
         accountList.forEach(account -> accountHasClientId(account, clientId));
     }
 
@@ -57,7 +58,7 @@ public class AccountValidations {
         }
     }
 
-    public void createValidations (Iterable<Account> accounts) {
+    public void createValidations (List<Account> accounts) {
         validateNotNull(accounts,"Can't create null accounts");
         accounts.forEach(this::createValidations);
     }
