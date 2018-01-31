@@ -16,8 +16,6 @@
         <spring.useversion>1.5.7.RELEASE</spring.useversion>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <server.port>7780</server.port>
-        <!--<maven.test.skip>true</maven.test.skip>-->
     </properties>
 
     <!--        <parent>

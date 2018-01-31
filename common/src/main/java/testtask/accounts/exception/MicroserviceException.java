@@ -25,6 +25,7 @@ public class MicroserviceException extends RuntimeException {
     }
 
     public MicroserviceException(ErrorTypes type, String info) {
+        super(info);
         this.type = type;
         this.info = info;
     }

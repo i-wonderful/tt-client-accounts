@@ -25,7 +25,7 @@ public class ApiErrorDto {
                 status = HttpStatus.NOT_ACCEPTABLE;
                 break;
             case null_argument:
-                status = HttpStatus.BAD_REQUEST;
+                status = HttpStatus.PARTIAL_CONTENT;
                 break;
             case not_found:
                 status = HttpStatus.NOT_FOUND;
@@ -79,4 +79,12 @@ public class ApiErrorDto {
     public void setErrType(String errType) {
         this.errType = errType;
     }
+
+    @Override
+    public String toString() {
+        return (status != null ? "status: " + status : "")
+                + (errType != null ? ", errorType: " + errType : "")
+                + (message != null ? ", message: " + message : "");
+    }
+
 }
