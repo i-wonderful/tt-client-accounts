@@ -93,14 +93,13 @@ public class AccountsServiceIntegrationTests {
 //        assertThat(createdAccounts).hasSize(2);
 //
 //        // check that entities existed id db
-//        List<Long> ids = createdAccounts.stream().map(Account::getId).collect(Collectors.toList());
+//        Iterable<Long> ids = createdAccounts.stream().map(Account::getId).collect(Collectors.toList());
 //        Iterable<AccountEntity> findCreatedAccountsEntities = repository.findAll(ids);
 //        assertThat(findCreatedAccountsEntities).hasSize(2);
 //
 //        // check what created accounts is right accounts
 //        Iterable<Account> findCreatedAccounts = AccountConvertor.entityListToModels(findCreatedAccountsEntities);
 //        assertThat(findCreatedAccounts).containsExactlyInAnyOrder(createdAccounts.toArray(new Account[2]));
-//
 //    }
 
     @Test

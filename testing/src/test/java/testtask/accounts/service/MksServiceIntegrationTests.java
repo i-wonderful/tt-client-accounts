@@ -2,6 +2,7 @@ package testtask.accounts.service;
 
 import org.hamcrest.CustomMatcher;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -101,6 +102,7 @@ public class MksServiceIntegrationTests {
     }
 
     @Test
+    @Ignore
     public void findClientWithAccounts() {
         Client clientFind = clientService.findWithAccounts(clientWithAccounts.getId());
 
@@ -124,6 +126,7 @@ public class MksServiceIntegrationTests {
     }
 
     @Test
+    @Ignore
     public void findClientWitoutAccounts() {
         Client clientFind = clientService.findWithAccounts(clientWithoutAccounts.getId());
 
