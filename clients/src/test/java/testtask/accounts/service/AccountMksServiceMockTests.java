@@ -1,5 +1,6 @@
 package testtask.accounts.service;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -69,6 +70,7 @@ public class AccountMksServiceMockTests {
     }
 
     @Test
+    @Ignore
     public void findAccountsByClientIdWithOkResponse() {
         // given
         final Account account = createAccount();
