@@ -1,7 +1,6 @@
 package testtask.accounts.service;
 
 import java.util.Arrays;
-import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,6 +88,10 @@ public class AccountService {
     }
 
     public void update(Account account) {
+        if (account == null) {
+            throw new AccountException(ErrorTypes.null_argument);
+        }
+
         validations.validateAccount(account);
         AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
         log.info("Update account: " + account);
@@ -102,7 +105,7 @@ public class AccountService {
      */
     public void delete(Account account) {
         if (account == null) {
-            throw new AccountException(ErrorTypes.validation);
+            throw new AccountException(ErrorTypes.null_argument);
         }
         delete(account.getId());
     }

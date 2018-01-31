@@ -15,6 +15,8 @@ public class MicroserviceException extends RuntimeException {
         null_argument,
         not_found,
         bad_mks_request,
+        mks_response_null,
+        mks_response_unknown,
         db_error,
         other
     }

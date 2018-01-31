@@ -1,5 +1,7 @@
 package testtask.accounts.service;
 
+import java.math.BigDecimal;
+import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import org.hamcrest.core.StringContains;
 import org.junit.Rule;
@@ -19,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import static testtask.accounts.TestHelper.*;
 import testtask.accounts.exception.ApiErrorDto;
+import testtask.accounts.model.Account;
+import testtask.accounts.model.Currency;
 
 /**
  *
@@ -40,42 +44,86 @@ public class AccountMksServiceMockTests {
     public void deleteWithOkResponce() {
 
         // given
-        mockRequestWith(new ResponseEntity(null, HttpStatus.OK));
+        mockRequestExchange(new ResponseEntity(null, HttpStatus.OK));
 
         // then  
-        int result = accountMksService.deleteAccountsByClientId(1L);
-
-        // when
-        assertThat(result).isEqualTo(1);
+        accountMksService.deleteAccountsByClientId(1L);
     }
 
     @Test
-    public void throwExceptionThenErrorResponse() {
+    public void throwExceptionThenDeleteAccountsAndGetErrorResponse() {
+        // expect 
+        thrown.expect(expBadMksRequestMatcher());
+        thrown.expectMessage("Mks Accounts Error, url");
 
         // given
-        ApiErrorDto errorApi = new ApiErrorDto();
-        errorApi.setErrType("Some Error");
-        errorApi.setMessage("Something is bad");
-        errorApi.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-
+        ApiErrorDto errorApi = createErrorDto();
         ResponseEntity<ApiErrorDto> responseWithError = new ResponseEntity<>(errorApi, HttpStatus.INTERNAL_SERVER_ERROR);
-        mockRequestWith(responseWithError);
-
-        // when
-        thrown.expect(expBadMksRequestMatcher());
-        thrown.expectMessage(StringContains.containsString("Error in mks accounts."));
+        mockRequestExchange(responseWithError);
 
         // then
-         accountMksService.deleteAccountsByClientId(1L);
+        accountMksService.deleteAccountsByClientId(1L);
 
     }
 
-    private void mockRequestWith(final ResponseEntity response) {
+    @Test
+    public void findAccountsByClientIdWithOkResponse() {
+        // given
+        final Account account = createAccount();
+        mockRequestGetForEntity(new ResponseEntity(new Account[]{account}, HttpStatus.OK));
+
+        // then
+        List<Account> accounts = accountMksService.findAccountsByClientId(1L);
+
+        // when
+        assertThat(accounts).hasSize(1);
+        assertThat(accounts).containsExactly(account);
+    }
+
+    @Test
+    public void throwExceptionThenFindAccountsAndGetErrorResponce() {
+        // expect
+        thrown.expect(expBadMksRequestMatcher());
+        thrown.expectMessage("Mks Accounts Error, url");
+        
+        // given
+        final ApiErrorDto errorDto = createErrorDto();
+        mockRequestGetForEntity(new ResponseEntity(errorDto, HttpStatus.INTERNAL_SERVER_ERROR));
+
+        // then
+        accountMksService.findAccountsByClientId(1L);
+
+    }
+
+    private void mockRequestExchange(final ResponseEntity response) {
         BDDMockito.given(restTemplate.exchange(anyString(),
                 any(HttpMethod.class),
                 Matchers.<HttpEntity<?>>any(),
                 any(Class.class)))
                 .willReturn(response);
+    }
+
+    private void mockRequestGetForEntity(final ResponseEntity response) {
+        BDDMockito.given(restTemplate.getForEntity(anyString(), any(Class.class))).willReturn(response);
+    }
+
+    private Account createAccount() {
+        Account account = new Account();
+        account.setId(1L);
+        account.setBalance(new BigDecimal(3451253.23));
+        account.setClientId(78L);
+        account.setCurrency(Currency.RUB);
+        account.setName("Some Account");
+        return account;
+    }
+
+    private ApiErrorDto createErrorDto() {
+        ApiErrorDto errorApi = new ApiErrorDto();
+        errorApi.setErrType("SomeTypeError");
+        errorApi.setMessage("Something is bad");
+        errorApi.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return errorApi;
     }
 
 }

@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package testtask.accounts.service;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +17,7 @@ import static testtask.accounts.exception.MicroserviceException.*;
 import testtask.accounts.model.Account;
 
 /**
+ * Rest Client for Accounts Mks.
  *
  * @author Olga Grazhdanova <dvl.java@gmail.com> at Jan 30, 2018
  */
@@ -42,39 +37,79 @@ public class AccountMksService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public List<Account> findAccountsByClientId(Long clientId) {
-        String path = getBaseAccountUrl() + "/ClientId/" + clientId;
+    /**
+     * Find Accounts by ClientId
+     *
+     * @param clientId
+     * @return
+     */
+    public List<Account> findAccountsByClientId(Long clientId) throws ClientException {
+        String url = getBaseAccountUrl() + "/ClientId/" + clientId;
 
-        log.info("Get client with accounts by url: " + path);
+        log.info("Mks Request: find accounts by clientId, url: " + url);
 
-        ResponseEntity<Account[]> responce = restTemplate.getForEntity(path, Account[].class);
+        ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
 
-        // todo check Exceptions
-        List<Account> accounts = Arrays.asList(responce.getBody());
-        return accounts;
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            return Arrays.asList(parseResponse(response, Account[].class));
+        } else {
+            throw createClientException(response, url);
+        }
+
     }
 
     /**
      * Delete Accounts by clientId.
      *
      * @param clientId
-     * @return
      */
-    public int deleteAccountsByClientId(Long clientId) {
+    public void deleteAccountsByClientId(Long clientId) throws ClientException {
         String url = getBaseAccountUrl() + "/clientId/" + clientId;
 
-        log.info("delete accounts by clientId, url: {}", url);
+        log.info("Mks Request: delete accounts by clientId, url: {}", url);
 
-        ResponseEntity<ApiErrorDto> response = restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity.EMPTY, ApiErrorDto.class);
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return 1;
+        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity.EMPTY, Object.class);
+        if (!response.getStatusCode().equals(HttpStatus.OK)) {
+            throw createClientException(response, url);
+        }
+    }
+
+    public void createAccounts(List<Account> accounts) {
+        // todo
+    }
+
+    public void updateAccounts(List<Account> accounts) {
+        // todo
+    }
+
+    private ClientException createClientException(ResponseEntity<Object> responce, String url) throws ClientException {
+        String message = String.format("Mks Accounts Error, url: %s.", url);
+        if (responce.getBody() != null) {
+            if (responce.getBody() instanceof ApiErrorDto) {
+                ApiErrorDto errorDto = (ApiErrorDto) responce.getBody();
+                message += errorDto.toString();
+            } else {
+                message += "Unknown responce body: " + responce.getBody().getClass();
+            }
         } else {
-            String message = String.format("Error in mks accounts. url: %s ", url);
-            
-            ApiErrorDto errorMks = response.getBody();
-            message += (errorMks != null) ? errorMks.toString() : "";
-            log.error(message);
-            throw new ClientException(clientId, ErrorTypes.bad_mks_request, message);
+            message += "ErrorDto is null";
+        }
+
+        log.error(message);
+        return new ClientException(ErrorTypes.bad_mks_request, message);
+    }
+
+    private <T extends Object> T parseResponse(ResponseEntity<Object> response, Class<T> clazz) {
+
+        if (response.getBody() == null) {
+            throw new ClientException(ErrorTypes.mks_response_null);
+        }
+
+        if (clazz.isInstance(response.getBody())) {
+            T obj = (T) response.getBody();
+            return obj;
+        } else {
+            throw new ClientException(ErrorTypes.mks_response_unknown);
         }
     }
 

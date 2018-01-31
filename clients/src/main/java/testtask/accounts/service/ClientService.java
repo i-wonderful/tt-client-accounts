@@ -23,12 +23,12 @@ public class ClientService {
 
     private final ClientRepository repository;
 
-    private final AccountMksService accMksService;
+    private final AccountMksService accountsMksService;
     
     @Autowired
     public ClientService(AccountMksService accMksService, ClientRepository repository) {
         this.repository = repository;
-        this.accMksService = accMksService;
+        this.accountsMksService = accMksService;
     }
 
     /**
@@ -58,7 +58,7 @@ public class ClientService {
         }
 
         Client client = findOne(id);
-        List<Account> accounts = accMksService.findAccountsByClientId(id);
+        List<Account> accounts = accountsMksService.findAccountsByClientId(id);
         client.setAccounts(accounts);
         return client;
     }
@@ -77,6 +77,10 @@ public class ClientService {
         if (client.getId() != null) {
             throw new ClientException(client.getId(), ErrorTypes.validation, "Can't create client with predefined id");
         }
+        
+        // todo
+        accountsMksService.createAccounts(client.getAccounts());
+        
         return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
 
@@ -97,6 +101,9 @@ public class ClientService {
             throw new ClientException(client.getId(), ErrorTypes.not_found);
         }
 
+        // todo
+        accountsMksService.updateAccounts(client.getAccounts());
+        
         client.setId(id);
         return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
@@ -115,7 +122,7 @@ public class ClientService {
             throw new ClientException(id, ErrorTypes.not_found);
         }
 
-        accMksService.deleteAccountsByClientId(id);
+        accountsMksService.deleteAccountsByClientId(id);
                
         repository.delete(id);
     }
