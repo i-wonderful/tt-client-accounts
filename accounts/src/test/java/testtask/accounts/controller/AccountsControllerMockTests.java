@@ -1,7 +1,5 @@
 package testtask.accounts.controller;
 
-import java.util.Arrays;
-import static org.assertj.core.api.Assertions.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,15 +13,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import testtask.accounts.AccountsApplication;
-import static testtask.accounts.TestHelper.*;
 import testtask.accounts.exception.AccountExceptionHandler;
 import testtask.accounts.model.Account;
 import testtask.accounts.model.Currency;
 import testtask.accounts.service.AccountService;
+
+import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static testtask.accounts.TestHelper.createAccountModel;
 
 /**
  *
@@ -128,12 +131,12 @@ public class AccountsControllerMockTests {
         final long clientId = 558L;
 
         // then
-        MockHttpServletResponse responce = mockMvc.perform(delete(URL + "/clientId/" + clientId))
+        MockHttpServletResponse response = mockMvc.perform(delete(URL + "/clientId/" + clientId))
                 .andDo(print())
                 .andReturn().getResponse();
 
         // when
-        assertThat(responce.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
 //    public void delete
