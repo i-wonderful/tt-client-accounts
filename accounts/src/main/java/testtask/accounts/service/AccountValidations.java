@@ -25,6 +25,9 @@ public class AccountValidations {
     }
 
     public void validateAccount(Account account) {
+
+        validateNotNull(account,"Null Account not allowed");
+
         Set<ConstraintViolation<Account>> constraintViolations = validator.validate(account);
         if (!constraintViolations.isEmpty()) {
             //TODO тут по-хорошему можно бы все ошибки собрать сразу, но это тест.задание, так что будет первая
@@ -45,5 +48,25 @@ public class AccountValidations {
     public void allAccountsHasClientId(Iterable<Account> accountList, Long clientId) throws AccountException {
         accountList.forEach(account -> accountHasClientId(account, clientId));
     }
+
+    public void createValidations (Account account) {
+        validateAccount(account);
+        if (account.getId() != null) {
+            throw new AccountException(MicroserviceException.ErrorTypes.validation,
+                    "Can't create Account with predefined id: " + account.getId());
+        }
+    }
+
+    public void createValidations (Iterable<Account> accounts) {
+        validateNotNull(accounts,"Can't create null accounts");
+        accounts.forEach(this::createValidations);
+    }
+
+    public <T> void validateNotNull (T id, String errorMessage) {
+        if (id == null) {
+            throw new AccountException(MicroserviceException.ErrorTypes.null_argument,errorMessage);
+        }
+    }
+
 
 }

@@ -1,13 +1,12 @@
 package testtask.accounts.exception;
 
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -18,7 +17,7 @@ import org.springframework.web.client.ResourceAccessException;
 public class ClientExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
-    public ApiErrorDto handleBaseException(RuntimeException ex, HttpServletResponse responce) {
+    public ApiErrorDto handleBaseException(RuntimeException ex, HttpServletResponse response) {
 
         ClientException out;
         if (ex instanceof ClientException) {
@@ -28,24 +27,24 @@ public class ClientExceptionHandler {
         }
 
         ApiErrorDto apiErrorDto = new ApiErrorDto(out);
-        responce.setStatus(apiErrorDto.getStatus().value());
+        response.setStatus(apiErrorDto.getStatus().value());
         return apiErrorDto;
     }
 
     @ExceptionHandler(ResourceAccessException.class)
-    public ApiErrorDto handleResourceException(ResourceAccessException ex, HttpServletResponse responce) {
+    public ApiErrorDto handleResourceException(ResourceAccessException ex, HttpServletResponse response) {
 
         ApiErrorDto apiErrorDto = new ApiErrorDto(ex);
-        responce.setStatus(apiErrorDto.getStatus().value());
+        response.setStatus(apiErrorDto.getStatus().value());
         return apiErrorDto;
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ApiErrorDto handleDbException(DataAccessException ex, HttpServletResponse responce) {
+    public ApiErrorDto handleDbException(DataAccessException ex, HttpServletResponse response) {
 
         ApiErrorDto apiErrorDto = new ApiErrorDto(MicroserviceException.ErrorTypes.db_error, ex.getLocalizedMessage());
 
-        responce.setStatus(apiErrorDto.getStatus().value());
+        response.setStatus(apiErrorDto.getStatus().value());
 
         return apiErrorDto;
     }

@@ -116,16 +116,16 @@ public class ClientControllerMockTests {
         });
 
         // when
-        MockHttpServletResponse responce = mockMvc.perform(post("/client")
+        MockHttpServletResponse response = mockMvc.perform(post("/client")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jacksonTester.write(client).getJson()))
                 .andDo(print())
                 .andReturn().getResponse();
 
         // then
-        assertThat(responce.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
 
-        Client savedClient = jacksonTester.parseObject(responce.getContentAsString());
+        Client savedClient = jacksonTester.parseObject(response.getContentAsString());
         assertThat(savedClient.getId()).isEqualTo(newClientId);
         assertThat(savedClient.getFirstName()).isEqualTo(client.getFirstName());
         assertThat(savedClient.getLastName()).isEqualTo(client.getLastName());
@@ -140,26 +140,26 @@ public class ClientControllerMockTests {
         BDDMockito.given(clientService.update(clientId, client)).willReturn(client);
 
         // when
-        MockHttpServletResponse responce = mockMvc.perform(put("/client/" + clientId)
+        MockHttpServletResponse response = mockMvc.perform(put("/client/" + clientId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jacksonTester.write(client).getJson()))
                 .andDo(print())
                 .andReturn().getResponse();
 
         // then
-        assertThat(responce.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
     public void canDeleteClient() throws Exception {
 
         // when
-        MockHttpServletResponse responce = mockMvc.perform(delete("/client/1"))
+        MockHttpServletResponse response = mockMvc.perform(delete("/client/1"))
                 .andDo(print())
                 .andReturn().getResponse();
 
         // then
-        assertThat(responce.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
@@ -188,12 +188,12 @@ public class ClientControllerMockTests {
         BDDMockito.given(clientService.findWithAccounts(clientId)).willThrow(new ResourceAccessException("Resource Exception"));
 
         // when
-        MockHttpServletResponse responce = mockMvc.perform(get("/client/withAccounts/" + clientId))
+        MockHttpServletResponse response = mockMvc.perform(get("/client/withAccounts/" + clientId))
                 .andDo(print())
                 .andReturn().getResponse();
 
         // then
-        assertThat(responce.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 
@@ -204,13 +204,13 @@ public class ClientControllerMockTests {
         BDDMockito.given(clientService.findOne(anyLong())).willThrow(new InvalidDataAccessResourceUsageException("Database is not available"));
 
         // when  
-        MockHttpServletResponse responce = mockMvc.perform(get("/client/1"))
+        MockHttpServletResponse response = mockMvc.perform(get("/client/1"))
                 .andDo(print())
                 .andReturn().getResponse();
 
         // then
-        assertThat(responce.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        ApiErrorDto errorDto = apiErrorJacksonTester.parseObject(responce.getContentAsString());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        ApiErrorDto errorDto = apiErrorJacksonTester.parseObject(response.getContentAsString());
         assertThat(errorDto.getErrType()).isEqualTo(ErrorTypes.db_error.toString());
     }
 }

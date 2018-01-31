@@ -1,8 +1,6 @@
 package testtask.accounts.controller;
 
 import io.swagger.annotations.Api;
-import java.util.Arrays;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import testtask.accounts.model.Account;
 import testtask.accounts.service.AccountService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/accounts")
@@ -43,7 +39,7 @@ public class AccountsController {
     }
 
     @GetMapping("/ClientId/{id}")
-    public ResponseEntity<List<Account>> getByClientId(@PathVariable("id") Long clientId) {
+    public ResponseEntity<Iterable<Account>> getByClientId(@PathVariable("id") Long clientId) {
         return new ResponseEntity<>(accountService.findByClientId(clientId), HttpStatus.OK);
     }
 
@@ -55,8 +51,8 @@ public class AccountsController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<List<Account>> createList(@RequestBody Account[] accounts) {
-        List<Account> created = accountService.create(Arrays.asList(accounts));
+    public ResponseEntity<Iterable<Account>> createList(@RequestBody Iterable<Account> accounts) {
+        Iterable<Account> created = accountService.create(accounts);
         return new ResponseEntity<>(created, HttpStatus.OK);
     }
 
@@ -80,7 +76,7 @@ public class AccountsController {
     }
 
     @DeleteMapping("/list")
-    public ResponseEntity delete(@RequestBody Account[] accounts) {
+    public ResponseEntity delete(@RequestBody Iterable<Account> accounts) {
         accountService.delete(accounts);
         return new ResponseEntity(HttpStatus.OK);
     }

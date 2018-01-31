@@ -84,14 +84,15 @@ public class AccountMksService {
         // todo
     }
 
-    private ClientException createClientException(ResponseEntity<Object> responce, String url) throws ClientException {
+    private ClientException createClientException(ResponseEntity<Object> response, String url) throws ClientException {
         String message = String.format("Mks Accounts Error, url: %s.", url);
-        if (responce.getBody() != null) {
-            if (responce.getBody() instanceof ApiErrorDto) {
-                ApiErrorDto errorDto = (ApiErrorDto) responce.getBody();
+        if (response.getBody() != null) {
+            if (response.getBody() instanceof ApiErrorDto) {
+                ApiErrorDto errorDto = (ApiErrorDto) response.getBody();
                 message += errorDto.toString();
             } else {
-                message += "Unknown responce body: " + responce.getBody().getClass();
+                message += "Unknown response body: " + response.getBody().getClass();
+                log.error(message);
             }
         } else {
             message += "ErrorDto is null";
@@ -111,6 +112,7 @@ public class AccountMksService {
             T obj = (T) response.getBody();
             return obj;
         } else {
+            log.error("body: " + response.getBody());
             throw new ClientException(ErrorTypes.mks_response_unknown);
         }
     }

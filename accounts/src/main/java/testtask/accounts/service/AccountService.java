@@ -9,9 +9,6 @@ import testtask.accounts.dao.AccountRepository;
 import testtask.accounts.exception.AccountException;
 import testtask.accounts.model.Account;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 
 /**
@@ -37,14 +34,8 @@ public class AccountService {
      * @return
      */
     public Account create(Account account) {
-        if (account == null) {
-            throw new AccountException(ErrorTypes.null_argument, "Null Account not allowed");
-        }
 
-        if (account.getId() != null) {
-            throw new AccountException(ErrorTypes.validation, "Can't create Account with predefined id");
-        }
-
+        validations.createValidations(account);
         AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
         accountEntity = repository.save(accountEntity);
         account = AccountConvertor.entityToModel(accountEntity);
@@ -58,23 +49,13 @@ public class AccountService {
      * @param accounts
      * @return
      */
-    public List<Account> create(List<Account> accounts) {
-        if (accounts == null) {
-            throw new AccountException(ErrorTypes.null_argument);
-        }
-
-        accounts.forEach(ac -> {
-            if (ac == null) {
-                throw new AccountException(ErrorTypes.null_argument, "Null Account not Allowed");
-            }
-            if (ac.getId() != null) {
-                throw new AccountException(ErrorTypes.validation, "Can't create Account with predefined id");
-            }
-        });
-
-        List<Account> saved = AccountConvertor.entityListToModels(repository.save(AccountConvertor.modelsListToEntities(accounts)));
-        log.info("Create List Accounts: " + saved.toString());
-        return saved;
+    public Iterable<Account> create(Iterable<Account> accounts) {
+        validations.createValidations(accounts);
+        Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
+        accountEntities = repository.save(accountEntities);
+        accounts = AccountConvertor.entityListToModels(accountEntities);
+        log.info("Create List Accounts: " + accounts.toString());
+        return accounts;
     }
 
     public Account get(Long id) {
@@ -89,10 +70,6 @@ public class AccountService {
     }
 
     public void update(Account account) {
-        if (account == null) {
-            throw new AccountException(ErrorTypes.null_argument);
-        }
-
         validations.validateAccount(account);
         AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
         log.info("Update account: " + account);
@@ -105,9 +82,7 @@ public class AccountService {
      * @param account
      */
     public void delete(Account account) {
-        if (account == null) {
-            throw new AccountException(ErrorTypes.null_argument);
-        }
+        validations.validateAccount(account);
         delete(account.getId());
     }
 
@@ -117,10 +92,7 @@ public class AccountService {
      * @param id
      */
     public void delete(Long id) {
-        if (id == null) {
-            throw new AccountException(ErrorTypes.null_argument, "Cant delete null account");
-        }
-
+        validations.validateNotNull(id,"Can't delete account with id = null");
         if (!repository.exists(id)) {
             throw new AccountException(ErrorTypes.not_found, id);
         }
@@ -128,27 +100,23 @@ public class AccountService {
         repository.delete(id);
     }
 
-    public void delete(Account[] accounts) {
-        if (accounts == null) {
-            throw new AccountException(ErrorTypes.null_argument);
-        }
-        log.info("Delete list accounts: {} ", Arrays.toString(accounts));
-        repository.delete(AccountConvertor.modelsListToEntities(Arrays.asList(accounts)));
+    public void delete(Iterable<Account> accounts) {
+        validations.validateNotNull(accounts,"can't delete null accounts");
+        log.info("Delete list accounts: {} ", accounts);
+        repository.delete(AccountConvertor.modelsListToEntities(accounts));
     }
 
-    public List<Account> getAll() {
+    public Iterable<Account> getAll() {
         Iterable<AccountEntity> accountEntities = repository.findAll();
-        List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
+        Iterable<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
         log.info("Get all accounts: " + accounts);
         return accounts;
     }
 
-    public List<Account> findByClientId(Long clientId) {
-        if (clientId == null) {
-            throw new AccountException(ErrorTypes.null_argument);
-        }
+    public Iterable<Account> findByClientId(Long clientId) {
+        validations.validateNotNull(clientId,"client id is null");
         Iterable<AccountEntity> accountEntities = repository.findByClientId(clientId);
-        List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
+        Iterable<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
         log.info("Find all accounts of client with ID {} : {}", clientId, accounts);
         return accounts;
     }
@@ -166,11 +134,8 @@ public class AccountService {
      * @param clientId
      */
     public void deleteAllAccountsOfClient(Long clientId) {
-        if (clientId == null) {
-            throw new AccountException(ErrorTypes.null_argument);
-        }
-
-        Iterable<AccountEntity> accountEntities = repository.findByClientId(clientId);//AccountConvertor.modelsListToEntities(accounts);
+        validations.validateNotNull(clientId,"clientId is null");
+        Iterable<AccountEntity> accountEntities = repository.findByClientId(clientId);
         repository.delete(accountEntities);
         log.info("Bulk account delete of client with ID {} : {}", clientId, accountEntities);
     }

@@ -26,7 +26,6 @@ public class Account {
 
     @NotNull
     @Min(value = 0L, message = "The value must be positive")
-    @Digits(integer = 10, fraction = 2)
     private BigDecimal balance;
 
     private Currency currency;

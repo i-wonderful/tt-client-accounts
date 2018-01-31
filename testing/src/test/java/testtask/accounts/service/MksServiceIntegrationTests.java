@@ -63,7 +63,7 @@ public class MksServiceIntegrationTests {
 
     /* Test Data */
     private Client clientWithAccounts;
-    private List<Account> accounts;
+    private Iterable<Account> accounts;
     private Client clientWithoutAccounts;
 
     @Before
@@ -112,7 +112,7 @@ public class MksServiceIntegrationTests {
         assertEquals(clientWithAccounts.getLastName(), clientFind.getLastName());
 
         // check accounts
-        assertThat(clientFind.getAccounts(), containsInAnyOrder(accounts.toArray()));
+        assertThat(clientFind.getAccounts(), containsInAnyOrder(accounts));
     }
 
     @Test
