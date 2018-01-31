@@ -126,7 +126,6 @@ public class MksServiceIntegrationTests {
     }
 
     @Test
-    @Ignore
     public void findClientWitoutAccounts() {
         Client clientFind = clientService.findWithAccounts(clientWithoutAccounts.getId());
 

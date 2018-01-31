@@ -13,7 +13,6 @@ import testtask.accounts.exception.ApiErrorDto;
 import testtask.accounts.exception.ClientException;
 import testtask.accounts.model.Account;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
@@ -53,7 +52,7 @@ public class AccountMksService {
         ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
 
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            return Arrays.asList(parseResponse(response, Account[].class));
+            return parseResponse(response, List.class);
         } else {
             throw createClientException(response, url);
         }
