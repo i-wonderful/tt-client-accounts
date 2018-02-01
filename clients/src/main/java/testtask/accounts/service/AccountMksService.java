@@ -1,5 +1,6 @@
 package testtask.accounts.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,11 +110,11 @@ public class AccountMksService {
             throw new ClientException(ErrorTypes.mks_response_null);
         }
 
-        if (clazz.isInstance(response.getBody())) {
-            T obj = (T) response.getBody();
+        try {
+            T obj = new ObjectMapper().convertValue(response.getBody(), clazz);
             return obj;
-        } else {
-            log.error("body: " + response.getBody());
+        } catch (Exception e) {
+            log.error("body: " + response.getBody() + " " + e.getLocalizedMessage());
             throw new ClientException(ErrorTypes.mks_response_unknown);
         }
     }

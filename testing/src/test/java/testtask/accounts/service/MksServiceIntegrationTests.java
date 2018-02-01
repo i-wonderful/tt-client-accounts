@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -100,7 +101,6 @@ public class MksServiceIntegrationTests {
     }
 
     @Test
-//    @Ignore
     public void findClientWithAccounts() {
         Client clientFind = clientService.findWithAccounts(clientWithAccounts.getId());
 
@@ -111,12 +111,9 @@ public class MksServiceIntegrationTests {
         assertEquals(clientWithAccounts.getFirstName(), clientFind.getFirstName());
         assertEquals(clientWithAccounts.getLastName(), clientFind.getLastName());
 
-        // check accounts
-        assertEquals(clientFind.getAccounts(), accounts);
+       // check accounts
+        assertThat(clientFind.getAccounts(), containsInAnyOrder(accounts.toArray()));
 
-//        for (Account account : accounts) {
-//            assertThat(clientFind.getAccounts(), containsInAnyOrder(account));
-//        }
     }
 
     @Test
