@@ -21,10 +21,10 @@ import testtask.accounts.model.Currency;
 import testtask.accounts.service.AccountService;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static testtask.accounts.TestHelper.createAccountModel;
 
@@ -46,7 +46,7 @@ public class AccountsControllerMockTests {
     private AccountsController controller;
 
     private JacksonTester<Account> accountJTester;
-    JacksonTester<Account[]> listAccountJTester;
+    private JacksonTester<List<Account>> listAccountJTester;
 
     @Before
     public void init() {
@@ -93,7 +93,8 @@ public class AccountsControllerMockTests {
         // when
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        Account[] accounts = listAccountJTester.parseObject(response.getContentAsString());
+        
+        List<Account> accounts = listAccountJTester.parseObject(response.getContentAsString());
         assertThat(accounts).isNotNull().isNotEmpty();
         assertThat(accounts).containsExactlyInAnyOrder(account1, account2);
 
@@ -139,5 +140,23 @@ public class AccountsControllerMockTests {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
-//    public void delete
+    @Test
+    public void createAccountsList() throws Exception {
+        // given
+        final List<Account> accounts = Arrays.asList(createAccountModel(34545.91, Currency.RUB, 67L, "SomeAcc"));
+        BDDMockito.given(service.create(accounts)).willReturn(accounts);
+
+        // then
+        MockHttpServletResponse response = mockMvc.perform(post(URL + "/list")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(listAccountJTester.write(accounts).getJson()))
+                .andDo(print())
+                .andReturn().getResponse();
+
+        // when
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        List<Account> accountsSaved = listAccountJTester.parseObject(response.getContentAsString());
+        assertThat(accountsSaved).hasSameSizeAs(accounts);
+    }
+
 }

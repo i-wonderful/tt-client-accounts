@@ -8,6 +8,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import testtask.accounts.exception.ApiErrorDto;
@@ -32,7 +37,7 @@ public class AccountMksService {
     private String PORT;
 
     @Value("${acc-mks.host}")
-    private String URL_HOST;
+    private String HOST;
 
     @Value("${acc-mks.base.url}")
     private String URL_ACCOUNTS;
@@ -46,8 +51,8 @@ public class AccountMksService {
      * @param clientId
      * @return
      */
-    public List<Account> findAccountsByClientId(Long clientId) throws ClientException {
-        String url = getBaseAccountUrl() + "/ClientId/" + clientId;
+    public List<Account> findAccountsByClientId(Long clientId) throws ClientException, RestClientResponseException {
+        String url = getBaseAccountUrl( "/ClientId/" + clientId);
 
         log.info("Mks Request: find accounts by clientId, url: " + url);
 
@@ -67,8 +72,8 @@ public class AccountMksService {
      *
      * @param clientId
      */
-    public void deleteAccountsByClientId(Long clientId) throws ClientException {
-        String url = getBaseAccountUrl() + "/clientId/" + clientId;
+    public void deleteAccountsByClientId(Long clientId) throws ClientException, RestClientException {
+        String url = getBaseAccountUrl("/clientId/" + clientId);
 
         log.info("Mks Request: delete accounts by clientId, url: {}", url);
 
@@ -78,8 +83,32 @@ public class AccountMksService {
         }
     }
 
-    public void createAccounts(List<Account> accounts) {
-        // todo
+    /**
+     * Create Accounts
+     *
+     * @param accounts
+     * @return
+     */
+    public List<Account> createAccounts(List<Account> accounts) throws ClientException {
+        if (accounts.isEmpty()) {
+            return accounts;
+        }
+
+        String url = getBaseAccountUrl("/list");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        log.info("Mks Request: create accounts, url: {} ", url);
+        HttpEntity<List<?>> requestEntity = new HttpEntity<>(accounts, headers);
+
+        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
+
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            Account[] accountsSaved = parseResponse(response, Account[].class);
+            return Arrays.asList(accountsSaved);
+        } else {
+            throw createClientException(response, url);
+        }
     }
 
     public void updateAccounts(List<Account> accounts) {
@@ -119,8 +148,12 @@ public class AccountMksService {
         }
     }
 
-    private String getBaseAccountUrl() {
-        return URL_HOST + ":" + PORT + URL_ACCOUNTS;
+    private String getBaseAccountUrl(String path) {
+        UriComponentsBuilder uri = UriComponentsBuilder.newInstance();
+        uri.scheme("http").host(HOST).port(PORT).path(URL_ACCOUNTS);
+
+//        uri.build();
+        return uri.toUriString() + ((path != null) ? path : "");
     }
 
 }

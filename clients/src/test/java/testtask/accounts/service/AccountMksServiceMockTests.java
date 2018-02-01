@@ -20,6 +20,7 @@ import testtask.accounts.model.Account;
 import testtask.accounts.model.Currency;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,7 +71,6 @@ public class AccountMksServiceMockTests {
     }
 
     @Test
-    @Ignore
     public void findAccountsByClientIdWithOkResponse() {
         // given
         final Account account = createAccount();
@@ -97,6 +97,22 @@ public class AccountMksServiceMockTests {
         // then
         accountMksService.findAccountsByClientId(1L);
 
+    }
+    
+    @Test
+    public void createAccounts(){
+    
+        // given
+        final List<Account> accounts = Arrays.asList(createAccount());
+        mockRequestExchange(new ResponseEntity(accounts.toArray(), HttpStatus.OK));
+        
+        // then
+        List<Account> accountsSaved = accountMksService.createAccounts(accounts);
+        
+        // when
+        assertThat(accountsSaved).isNotNull();
+        assertThat(accountsSaved).hasSameSizeAs(accounts);
+        
     }
 
     private void mockRequestExchange(final ResponseEntity response) {

@@ -36,15 +36,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import testtask.accounts.AccountsApplication;
 
 //import static org.hamcrest.MatcherAssert.*;
-
 /**
  *
  * @author Olga Grazhdanova <dvl.java@gmail.com> at Jan 28, 2018
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {ClientsApplication.class/*, AccountsApplication.class*/})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {ClientsApplication.class, AccountsApplication.class})
 @TestPropertySource(locations = "classpath:application.properties")
 @WithMockUser
 public class MksServiceIntegrationTests {
@@ -93,7 +93,7 @@ public class MksServiceIntegrationTests {
         account2.setClientId(clientWithAccountsEntity.getId());
 
         List<AccountEntity> accountsEntities = new ArrayList<>();
-        accountRepository.save(Arrays.asList(account1 ,account2)).forEach(accountsEntities::add);
+        accountRepository.save(Arrays.asList(account1, account2)).forEach(accountsEntities::add);
 
         clientWithAccounts = ClientConverter.entityToModel(clientWithAccountsEntity);
         accounts = AccountConvertor.entityListToModels(accountsEntities);
@@ -111,7 +111,7 @@ public class MksServiceIntegrationTests {
         assertEquals(clientWithAccounts.getFirstName(), clientFind.getFirstName());
         assertEquals(clientWithAccounts.getLastName(), clientFind.getLastName());
 
-       // check accounts
+        // check accounts
         assertThat(clientFind.getAccounts(), containsInAnyOrder(accounts.toArray()));
 
     }
@@ -135,15 +135,42 @@ public class MksServiceIntegrationTests {
     }
 
     @Test
-    public void deleteClientWithAccounts(){
-        
+    public void deleteClientWithAccounts() {
+
         final long clientId = clientWithAccounts.getId();
         clientService.delete(clientId);
-        
+
         assertThat("Client is not delete by Id", clientRepository.exists(clientId), is(false));
         assertThat("Accounts was not deleted by clientId", accountRepository.findByClientId(clientId), hasSize(0));
     }
-    
+
+    @Test
+    public void canCreateClientWithAccounts() {
+
+        Client clientNew = new Client("Guy", "Ritchie");
+
+        Account acc = new Account();
+        acc.setBalance(new BigDecimal(32555500));
+        acc.setCurrency(Currency.USD);
+        acc.setName("New Action Film Budgettt");
+
+        Account acc2 = new Account();
+        acc2.setBalance(new BigDecimal(7345525));
+        acc2.setCurrency(Currency.RUB);
+        acc2.setName("Additional important account453455");
+
+        clientNew.setAccounts(Arrays.asList(acc, acc2));
+
+        Client clientSaved = clientService.create(clientNew);
+        assertNotNull(clientSaved);
+        assertNotNull(clientSaved.getAccounts());
+
+        assertThat(clientRepository.exists(clientSaved.getId()), is(true));
+        assertThat(clientSaved.getAccounts(), hasSize(2));
+        assertThat(accountRepository.exists(clientSaved.getAccounts().get(0).getId()), is(true));
+        assertThat(accountRepository.exists(clientSaved.getAccounts().get(1).getId()), is(true));
+    }
+
     /**
      * Create Matcher for not found exception with standard message.
      *

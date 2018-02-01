@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
 
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 
 /**
  *
@@ -35,6 +38,13 @@ public class ClientExceptionHandler {
     public ApiErrorDto handleResourceException(ResourceAccessException ex, HttpServletResponse response) {
 
         ApiErrorDto apiErrorDto = new ApiErrorDto(ex);
+        response.setStatus(apiErrorDto.getStatus().value());
+        return apiErrorDto;
+    }
+
+    @ExceptionHandler(RestClientException.class)
+    public ApiErrorDto handleHttpErrorException(RestClientException ex, HttpServletResponse response) {
+        ApiErrorDto apiErrorDto = new ApiErrorDto(MicroserviceException.ErrorTypes.bad_mks_request, ex.getMessage());
         response.setStatus(apiErrorDto.getStatus().value());
         return apiErrorDto;
     }

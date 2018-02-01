@@ -17,7 +17,9 @@ import testtask.accounts.model.Currency;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static testtask.accounts.TestHelper.createAccountModel;
@@ -81,26 +83,26 @@ public class AccountsServiceIntegrationTests {
         assertThat(createdAccount).isEqualTo(findCreatedAccount);
     }
 
-//    @Test
-//    public void canCreateAccountsList() {
-//        Account acc1 = createAccountModel(123.12, Currency.RUB, 849L, "Acc1");
-//        Account acc2 = createAccountModel(465657.86, Currency.USD, 77L, "Acc2");
-//
-//        Iterable<Account> createdAccounts = service.create(Arrays.asList(acc1, acc2));
-//
-//        // check success saved
-//        assertThat(createdAccounts).isNotNull();
-//        assertThat(createdAccounts).hasSize(2);
-//
-//        // check that entities existed id db
-//        Iterable<Long> ids = createdAccounts.stream().map(Account::getId).collect(Collectors.toList());
-//        Iterable<AccountEntity> findCreatedAccountsEntities = repository.findAll(ids);
-//        assertThat(findCreatedAccountsEntities).hasSize(2);
-//
-//        // check what created accounts is right accounts
-//        Iterable<Account> findCreatedAccounts = AccountConvertor.entityListToModels(findCreatedAccountsEntities);
-//        assertThat(findCreatedAccounts).containsExactlyInAnyOrder(createdAccounts.toArray(new Account[2]));
-//    }
+    @Test
+    public void canCreateAccountsList() {
+        Account acc1 = createAccountModel(123.12, Currency.RUB, 849L, "Acc1");
+        Account acc2 = createAccountModel(465657.86, Currency.USD, 77L, "Acc2");
+
+        List<Account> createdAccounts = service.create(Arrays.asList(acc1, acc2));
+
+        // check success saved
+        assertThat(createdAccounts).isNotNull();
+        assertThat(createdAccounts).hasSize(2);
+
+        // check that entities existed id db
+        Iterable<Long> ids = createdAccounts.stream().map(Account::getId).collect(Collectors.toList());
+        Iterable<AccountEntity> findCreatedAccountsEntities = repository.findAll(ids);
+        assertThat(findCreatedAccountsEntities).hasSize(2);
+
+        // check what created accounts is right accounts
+        Iterable<Account> findCreatedAccounts = AccountConvertor.entityListToModels(findCreatedAccountsEntities);
+        assertThat(findCreatedAccounts).containsExactlyInAnyOrder(createdAccounts.toArray(new Account[2]));
+    }
 
     @Test
     public void throwAccountExceptionWhenCreateNewAccountWithId() {

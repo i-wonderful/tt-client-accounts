@@ -11,6 +11,7 @@ import testtask.accounts.model.Account;
 import testtask.accounts.model.Client;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 
@@ -25,7 +26,7 @@ public class ClientService {
     private final ClientRepository repository;
 
     private final AccountMksService accountsMksService;
-    
+
     @Autowired
     public ClientService(AccountMksService accMksService, ClientRepository repository) {
         this.repository = repository;
@@ -70,19 +71,30 @@ public class ClientService {
      * @param client
      * @return
      */
+    @Transactional
     public Client create(Client client) {
         if (client == null) {
             throw new ClientException(ErrorTypes.validation, "Null client not allowed");
         }
-        
+
         if (client.getId() != null) {
             throw new ClientException(client.getId(), ErrorTypes.validation, "Can't create client with predefined id");
         }
-        
-        // todo
-        accountsMksService.createAccounts(client.getAccounts());
-        
-        return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
+
+        // save client
+        ClientEntity entity = repository.save(ClientConverter.modelToEntity(client));
+        Client clientSaved = ClientConverter.entityToModel(entity);
+
+        // save accounts
+        if (client.getAccounts() != null) {
+            client.getAccounts().forEach(acc -> {
+                acc.setClientId(entity.getId());
+            });
+            List<Account> accountsSavesd = accountsMksService.createAccounts(client.getAccounts());
+            clientSaved.setAccounts(accountsSavesd);
+        }
+
+        return clientSaved;
     }
 
     /**
@@ -104,14 +116,14 @@ public class ClientService {
 
         // todo
         accountsMksService.updateAccounts(client.getAccounts());
-        
+
         client.setId(id);
         return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
     }
 
     /**
      * Delete Client with Accounts.
-     * 
+     *
      * @param id
      */
     public void delete(Long id) {
@@ -124,7 +136,7 @@ public class ClientService {
         }
 
         accountsMksService.deleteAccountsByClientId(id);
-               
+
         repository.delete(id);
     }
 }
