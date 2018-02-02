@@ -89,7 +89,7 @@ public class AccountMksServiceMockTests {
         // expect
         thrown.expect(expBadMksRequestMatcher());
         thrown.expectMessage("Mks Accounts Error, url");
-        
+
         // given
         final ApiErrorDto errorDto = createErrorDto();
         mockRequestGetForEntity(new ResponseEntity(errorDto, HttpStatus.INTERNAL_SERVER_ERROR));
@@ -98,21 +98,34 @@ public class AccountMksServiceMockTests {
         accountMksService.findAccountsByClientId(1L);
 
     }
-    
+
     @Test
-    public void createAccounts(){
-    
+    public void createAccounts() {
+
         // given
         final List<Account> accounts = Arrays.asList(createAccount());
         mockRequestExchange(new ResponseEntity(accounts.toArray(), HttpStatus.OK));
-        
+
         // then
         List<Account> accountsSaved = accountMksService.createAccounts(accounts);
-        
+
         // when
         assertThat(accountsSaved).isNotNull();
         assertThat(accountsSaved).hasSameSizeAs(accounts);
-        
+
+    }
+
+    @Test
+    public void throwExceptionThenCreateAccountsMksReturnError() {
+
+        // expect
+        thrown.expect(expBadMksRequestMatcher());
+
+        // given
+        mockRequestExchange(new ResponseEntity(createErrorDto(), HttpStatus.INTERNAL_SERVER_ERROR));
+
+        // when
+        accountMksService.createAccounts(Arrays.asList(createAccount(), createAccount()));
     }
 
     private void mockRequestExchange(final ResponseEntity response) {

@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import testtask.accounts.ClientsApplication;
 import testtask.accounts.dao.AccountConvertor;
 import testtask.accounts.dao.AccountEntity;
 import testtask.accounts.dao.AccountRepository;
@@ -30,13 +29,14 @@ import java.util.Arrays;
 import java.util.List;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import testtask.accounts.AccountsApplication;
+import static testtask.accounts.TestHelper.*;
 
 //import static org.hamcrest.MatcherAssert.*;
 /**
@@ -44,7 +44,7 @@ import testtask.accounts.AccountsApplication;
  * @author Olga Grazhdanova <dvl.java@gmail.com> at Jan 28, 2018
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {ClientsApplication.class, AccountsApplication.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {/*ClientsApplication.class,*/AccountsApplication.class})
 @TestPropertySource(locations = "classpath:application.properties")
 @WithMockUser
 public class MksServiceIntegrationTests {
@@ -57,6 +57,9 @@ public class MksServiceIntegrationTests {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private AccountMksService mksService;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -89,7 +92,7 @@ public class MksServiceIntegrationTests {
         AccountEntity account2 = new AccountEntity();
         account2.setName("Film Budget");
         account2.setCurrency(Currency.USD);
-        account2.setBalance(new BigDecimal(754555.95));
+        account2.setBalance(new BigDecimal(754555));
         account2.setClientId(clientWithAccountsEntity.getId());
 
         List<AccountEntity> accountsEntities = new ArrayList<>();
@@ -98,6 +101,17 @@ public class MksServiceIntegrationTests {
         clientWithAccounts = ClientConverter.entityToModel(clientWithAccountsEntity);
         accounts = AccountConvertor.entityListToModels(accountsEntities);
         clientWithoutAccounts = ClientConverter.entityToModel(clientWithoutAccountsEntity);
+    }
+
+    @After
+    public void clear() {
+        if (clientRepository.exists(clientWithAccounts.getId())) {
+            clientRepository.delete(clientWithAccounts.getId());
+        }
+        if (clientRepository.exists(clientWithoutAccounts.getId())) {
+            clientRepository.delete(clientWithoutAccounts.getId());
+        }
+        accountRepository.delete(AccountConvertor.modelsListToEntities(accounts));
     }
 
     @Test
@@ -169,6 +183,48 @@ public class MksServiceIntegrationTests {
         assertThat(clientSaved.getAccounts(), hasSize(2));
         assertThat(accountRepository.exists(clientSaved.getAccounts().get(0).getId()), is(true));
         assertThat(accountRepository.exists(clientSaved.getAccounts().get(1).getId()), is(true));
+    }
+
+    @Test
+    public void throwBadRequestExceptionThenTryToCreateAccountWithId() {
+        thrown.expect(expBadMksRequestMatcher());
+        thrown.expectMessage("Can't create Account with predefined id: ");
+
+        Account acc1 = new Account();
+        acc1.setBalance(new BigDecimal(534534));
+        acc1.setClientId(55L);
+        acc1.setCurrency(Currency.USD);
+        acc1.setName("TestSameAcc");
+        acc1.setId(2434L);
+
+        mksService.createAccounts(Arrays.asList(acc1));
+    }
+
+    /**
+     * Check that nothing was save then try to create new client with existing
+     * accounts and accounts mks return json with error.
+     */
+    @Test
+    public void throwBadRequestExceptionAndRollbackTransactionThanTryToSaveExistedAccount() {
+
+        thrown.expect(expBadMksRequestMatcher());
+        thrown.expectMessage("Can't create Account with predefined id");
+
+        long countClients = clientRepository.count();
+        long countAccounts = accountRepository.count();
+
+        Client clientNew = new Client("John", "Jocker");
+        clientNew.setAccounts(accounts);
+        try {
+            clientService.create(clientNew);
+        } catch (Exception e) {
+            long countClientsNew = clientRepository.count();
+            long countAccountsNew = accountRepository.count();
+            // nothing created
+            assertThat(countClientsNew, is(countClients));
+            assertThat(countAccountsNew, is(countAccounts));
+            throw e;
+        }
     }
 
     /**

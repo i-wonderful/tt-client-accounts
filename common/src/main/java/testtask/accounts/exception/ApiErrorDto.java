@@ -1,6 +1,5 @@
 package testtask.accounts.exception;
 
-//import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -52,10 +51,6 @@ public class ApiErrorDto {
         this(MicroserviceException.ErrorTypes.bad_mks_request, exp.getLocalizedMessage());
     }
 
-//public ApiErrorDto(DataAccessException ex) {
-//this()
-//    }
-//    public ApiErrorDto(Da)
     public HttpStatus getStatus() {
         return status;
     }
@@ -82,8 +77,7 @@ public class ApiErrorDto {
 
     @Override
     public String toString() {
-        return (status != null ? "status: " + status : "")
-                + (errType != null ? ", errorType: " + errType : "")
+        return  (errType != null ? ", errorType: " + errType : "")
                 + (message != null ? ", message: " + message : "");
     }
 

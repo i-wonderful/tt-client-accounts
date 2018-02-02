@@ -1,6 +1,5 @@
 package testtask.accounts.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,14 +14,13 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import testtask.accounts.exception.ApiErrorDto;
 import testtask.accounts.exception.ClientException;
 import testtask.accounts.model.Account;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
+import testtask.accounts.util.MksUtil;
 
 /**
  * Rest Client for Accounts Mks.
@@ -59,10 +57,10 @@ public class AccountMksService {
         ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
 
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            Account[] accounts = parseResponse(response, Account[].class);
+            Account[] accounts = MksUtil.parseResponse(response.getBody(), Account[].class);
             return Arrays.asList(accounts);
         } else {
-            throw createClientException(response, url);
+            throw MksUtil.createClientExceptionFromResponseError(response.getBody(), url);
         }
 
     }
@@ -79,7 +77,7 @@ public class AccountMksService {
 
         ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity.EMPTY, Object.class);
         if (!response.getStatusCode().equals(HttpStatus.OK)) {
-            throw createClientException(response, url);
+            throw MksUtil.createClientExceptionFromResponseError(response.getBody(), url);
         }
     }
 
@@ -104,10 +102,10 @@ public class AccountMksService {
         ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
 
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            Account[] accountsSaved = parseResponse(response, Account[].class);
+            Account[] accountsSaved = MksUtil.parseResponse(response.getBody(), Account[].class);
             return Arrays.asList(accountsSaved);
         } else {
-            throw createClientException(response, url);
+            throw MksUtil.createClientExceptionFromResponseError(response.getBody(), url);
         }
     }
 
@@ -115,44 +113,11 @@ public class AccountMksService {
         // todo
     }
 
-    private ClientException createClientException(ResponseEntity<Object> response, String url) throws ClientException {
-        String message = String.format("Mks Accounts Error, url: %s.", url);
-        if (response.getBody() != null) {
-            if (response.getBody() instanceof ApiErrorDto) {
-                ApiErrorDto errorDto = (ApiErrorDto) response.getBody();
-                message += errorDto.toString();
-            } else {
-                message += "Unknown response body: " + response.getBody().getClass();
-                log.error(message);
-            }
-        } else {
-            message += "ErrorDto is null";
-        }
-
-        log.error(message);
-        return new ClientException(ErrorTypes.bad_mks_request, message);
-    }
-
-    private <T extends Object> T parseResponse(ResponseEntity<Object> response, Class<T> clazz) {
-
-        if (response.getBody() == null) {
-            throw new ClientException(ErrorTypes.mks_response_null);
-        }
-
-        try {
-            T obj = new ObjectMapper().convertValue(response.getBody(), clazz);
-            return obj;
-        } catch (Exception e) {
-            log.error("body: " + response.getBody() + " " + e.getLocalizedMessage());
-            throw new ClientException(ErrorTypes.mks_response_unknown);
-        }
-    }
 
     private String getBaseAccountUrl(String path) {
         UriComponentsBuilder uri = UriComponentsBuilder.newInstance();
         uri.scheme("http").host(HOST).port(PORT).path(URL_ACCOUNTS);
 
-//        uri.build();
         return uri.toUriString() + ((path != null) ? path : "");
     }
 

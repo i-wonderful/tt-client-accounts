@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+import testtask.accounts.exception.ResponseMksErrorHandler;
 
 /**
  *
@@ -18,6 +19,9 @@ public class ClientsApplication {
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.basicAuthorization("user", "123").build();
+        return builder
+                .errorHandler(new ResponseMksErrorHandler())
+                .basicAuthorization("user", "123")
+                .build();
     }
 }
