@@ -197,7 +197,7 @@ public class MksServiceIntegrationTests {
         acc1.setName("TestSameAcc");
         acc1.setId(2434L);
 
-        mksService.createAccounts(Arrays.asList(acc1));
+        mksService.createAccounts(1L, Arrays.asList(acc1));
     }
 
     /**
@@ -205,7 +205,7 @@ public class MksServiceIntegrationTests {
      * accounts and accounts mks return json with error.
      */
     @Test
-    public void throwBadRequestExceptionAndRollbackTransactionThanTryToSaveExistedAccount() {
+    public void rollbackTransactionThenTryToSaveClientWithExistedAccount() {
 
         thrown.expect(expBadMksRequestMatcher());
         thrown.expectMessage("Can't create Account with predefined id");
@@ -226,6 +226,13 @@ public class MksServiceIntegrationTests {
             throw e;
         }
     }
+    
+//    public void rollbackTransactionThenTryToDeleteNullAccount(){
+//    
+//    long countClient = clientRepository.count();
+//    
+//    //clientWithAccounts.getAccounts().forEach(acc -> { acc.setId(null);});
+//    }
 
     /**
      * Create Matcher for not found exception with standard message.

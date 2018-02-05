@@ -50,7 +50,7 @@ public class AccountMksService {
      * @return
      */
     public List<Account> findAccountsByClientId(Long clientId) throws ClientException, RestClientResponseException {
-        String url = getBaseAccountUrl( "/ClientId/" + clientId);
+        String url = getBaseAccountUrl("/ClientId/" + clientId);
 
         log.info("Mks Request: find accounts by clientId, url: " + url);
 
@@ -84,14 +84,19 @@ public class AccountMksService {
     /**
      * Create Accounts
      *
+     * @param clientId
      * @param accounts
      * @return
      */
-    public List<Account> createAccounts(List<Account> accounts) throws ClientException {
+    public List<Account> createAccounts(Long clientId, List<Account> accounts) throws ClientException {
         if (accounts.isEmpty()) {
             return accounts;
         }
 
+        accounts.forEach(acc -> {
+            acc.setClientId(clientId);
+        });
+        
         String url = getBaseAccountUrl("/list");
 
         HttpHeaders headers = new HttpHeaders();
@@ -109,10 +114,11 @@ public class AccountMksService {
         }
     }
 
-    public void updateAccounts(List<Account> accounts) {
+    public List<Account> updateAccounts(List<Account> accounts) {
         // todo
-    }
 
+        return accounts;
+    }
 
     private String getBaseAccountUrl(String path) {
         UriComponentsBuilder uri = UriComponentsBuilder.newInstance();

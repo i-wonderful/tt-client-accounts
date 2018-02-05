@@ -1,5 +1,8 @@
 package testtask.accounts.service;
 
+import io.reactivex.Completable;
+import io.reactivex.functions.Action;
+import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,13 +89,8 @@ public class ClientService {
         Client clientSaved = ClientConverter.entityToModel(entity);
 
         // save accounts
-        if (client.getAccounts() != null) {
-            client.getAccounts().forEach(acc -> {
-                acc.setClientId(entity.getId());
-            });
-            List<Account> accountsSavesd = accountsMksService.createAccounts(client.getAccounts());
-            clientSaved.setAccounts(accountsSavesd);
-        }
+        List<Account> accountsSavesd = accountsMksService.createAccounts(clientSaved.getId(), client.getAccounts());
+        clientSaved.setAccounts(accountsSavesd);
 
         return clientSaved;
     }
@@ -126,7 +124,8 @@ public class ClientService {
      *
      * @param id
      */
-    public void delete(Long id) {
+    @Transactional
+    public void delete(Long id) throws RuntimeException {
         if (id == null) {
             throw new ClientException(ErrorTypes.validation, "Can't delete, id must be not null");
         }
@@ -135,8 +134,24 @@ public class ClientService {
             throw new ClientException(id, ErrorTypes.not_found);
         }
 
-        accountsMksService.deleteAccountsByClientId(id);
+        // action 1
+        Completable jobAccountsMks = Completable.fromAction(() -> {
+            log.info(">>> ActionOne, deleteAccountsByClientId >> Thread: " + Thread.currentThread().getName());
+            accountsMksService.deleteAccountsByClientId(id);
+        });
 
-        repository.delete(id);
+        // action 2
+        Completable jobMain = Completable.fromAction(() -> {
+            log.info(">>> ActionTwo >> Thread: " + Thread.currentThread().getName());
+            repository.delete(id);
+        });
+
+        // multithreading
+        jobAccountsMks = jobAccountsMks.subscribeOn(Schedulers.io());
+//         job2 = job2.subscribeOn(Schedulers.io());
+
+        // wait both actions
+        jobMain.mergeWith(jobAccountsMks).blockingAwait();
+
     }
 }

@@ -18,11 +18,20 @@ import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.model.Client;
 
 import java.util.Date;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import org.junit.Ignore;
+import org.mockito.BDDMockito;
+import org.mockito.Matchers;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import static testtask.accounts.TestHelper.expNotFoundMatcher;
 import static testtask.accounts.TestHelper.expValidationMatcher;
+import testtask.accounts.exception.ClientException;
+import testtask.accounts.exception.MicroserviceException;
 
 /**
  *
@@ -33,6 +42,9 @@ import static testtask.accounts.TestHelper.expValidationMatcher;
 @TestPropertySource(locations = "classpath:application.properties")
 public class ClientServiceIntegrationTests {
 
+    @MockBean
+    private AccountMksService accountMksService;
+
     @Autowired
     private ClientService service;
 
@@ -41,7 +53,7 @@ public class ClientServiceIntegrationTests {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    
+
     /* Test Data */
     private Client clientData;
 
@@ -167,9 +179,32 @@ public class ClientServiceIntegrationTests {
     }
 
     @Test
+    @Ignore
     public void throwResourceExpWhenTryToUseNotExistedMicroservice() {
         thrown.expect(ResourceAccessException.class);
 
         service.findWithAccounts(clientData.getId());
+    }
+
+    @Test
+    public void rollbackTransactionThenDeleteAccountsWithError() throws Exception {
+        thrown.expect(ClientException.class);
+
+        // given
+        final long countClientsBefore = repository.count();
+        BDDMockito.willThrow(new ClientException(MicroserviceException.ErrorTypes.bad_mks_request))
+                .given(accountMksService)
+                .deleteAccountsByClientId(Matchers.anyLong());
+
+        // then
+        try {
+            service.delete(clientData.getId());
+        } catch (Exception e) {
+            // when
+            final long countClientsAfter = repository.count();
+            assertThat(countClientsAfter).isEqualTo(countClientsBefore);
+            throw e;
+        }
+
     }
 }

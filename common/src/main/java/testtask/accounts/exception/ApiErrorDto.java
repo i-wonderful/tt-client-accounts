@@ -77,7 +77,7 @@ public class ApiErrorDto {
 
     @Override
     public String toString() {
-        return  (errType != null ? ", errorType: " + errType : "")
+        return  (errType != null ? "errorType: " + errType : "")
                 + (message != null ? ", message: " + message : "");
     }
 
