@@ -1,7 +1,7 @@
 package testtask.accounts.service;
 
 import io.reactivex.Completable;
-import io.reactivex.functions.Action;
+import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,14 +85,27 @@ public class ClientService {
         }
 
         // save client
-        ClientEntity entity = repository.save(ClientConverter.toEntity(client));
-        Client clientSaved = ClientConverter.toModel(entity);
-
+        Single<Client> jobClientSave = Single.fromCallable(() -> {
+            ClientEntity entity = repository.save(ClientConverter.toEntity(client));
+            Client clientSaved = ClientConverter.toModel(entity);
+            return clientSaved;
+        });
+        
         // save accounts
-        List<Account> accountsSavesd = accountsMksService.createAccounts(clientSaved.getId(), client.getAccounts());
-        clientSaved.setAccounts(accountsSavesd);
+        Single<List<Account>> jobAccountSave = jobClientSave.flatMap((Client clientSaved) -> {
+            List<Account> accountsSavesd = accountsMksService.createAccounts(clientSaved.getId(), client.getAccounts());
+            return Single.just(accountsSavesd);
+        });
+        
+//        job1 = job1.subscribeOn(Schedulers.io());
+        jobAccountSave = jobAccountSave.subscribeOn(Schedulers.io());
+        
+        Client clientResult = Single.zip(jobClientSave, jobAccountSave, (Client clientSaved, List<Account> accountsSaved) -> {
+            clientSaved.setAccounts(accountsSaved);
+            return clientSaved;
+        }).blockingGet();
 
-        return clientSaved;
+        return clientResult;
     }
 
     /**
@@ -103,7 +116,7 @@ public class ClientService {
      * @return
      */
     @Transactional
-    public Client update(Long id, Client client) {
+    public Client update(final Long id, final Client client) {
 
         if (id == null) {
             throw new ClientException(ErrorTypes.validation, "Can't update, id must be not null.");
@@ -113,13 +126,26 @@ public class ClientService {
             throw new ClientException(client.getId(), ErrorTypes.not_found);
         }
 
-        // todo
-        List<Account> accounts = accountsMksService.updateAccounts(id, client.getAccounts());
+        // action update accounts
+        Single<List<Account>> jobAccountsMks = Single.fromCallable(() -> accountsMksService.updateAccounts(id, client.getAccounts()));
 
-        client.setId(id);
-        client = ClientConverter.toModel(repository.save(ClientConverter.toEntity(client)));
-        client.setAccounts(accounts);
-        return client;
+        // action update client
+        Single<Client> jobClient = Single.fromCallable(() -> {
+            client.setId(id);
+            return ClientConverter.toModel(repository.save(ClientConverter.toEntity(client)));
+        });
+
+        // multithreading
+        jobAccountsMks = jobAccountsMks.subscribeOn(Schedulers.io());
+        //jobClient = jobClient.subscribeOn(Schedulers.io());
+
+        // wait all results
+        Client clientResult = Single.zip(jobAccountsMks, jobClient, (accounts, clientUpdated) -> {
+            clientUpdated.setAccounts(accounts);
+            return clientUpdated;
+        }).blockingGet();
+
+        return clientResult;
     }
 
     /**

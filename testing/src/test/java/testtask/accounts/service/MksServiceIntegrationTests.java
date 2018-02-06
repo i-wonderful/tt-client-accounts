@@ -259,12 +259,6 @@ public class MksServiceIntegrationTests {
         }
 
     }
-//    public void rollbackTransactionThenTryToDeleteNullAccount(){
-//    
-//    long countClient = clientRepository.count();
-//    
-//    //clientWithAccounts.getAccounts().forEach(acc -> { acc.setId(null);});
-//    }
 
     /**
      * Create Matcher for not found exception with standard message.
