@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package testtask.accounts.dao;
 
 import testtask.accounts.model.Client;
@@ -14,7 +8,7 @@ import testtask.accounts.model.Client;
  */
 public class ClientConverter {
 
-    public static ClientEntity modelToEntity(Client client){
+    public static ClientEntity toEntity(Client client){
     
         if(client == null) return null;
         
@@ -29,7 +23,7 @@ public class ClientConverter {
         return entity;
     }
     
-    public static Client entityToModel(ClientEntity clientEntity) {
+    public static Client toModel(ClientEntity clientEntity) {
     
         if(clientEntity == null) return null;
         

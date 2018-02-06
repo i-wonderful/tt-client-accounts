@@ -127,8 +127,7 @@ public class ClientControllerMockTests {
 
         Client savedClient = jacksonTester.parseObject(response.getContentAsString());
         assertThat(savedClient.getId()).isEqualTo(newClientId);
-        assertThat(savedClient.getFirstName()).isEqualTo(client.getFirstName());
-        assertThat(savedClient.getLastName()).isEqualTo(client.getLastName());
+        assertThat(savedClient).isEqualToIgnoringGivenFields(client, "id");
     }
 
     @Test

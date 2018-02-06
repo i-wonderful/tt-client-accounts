@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,6 +65,18 @@ public class AccountsController {
         accountService.update(account);
         return new ResponseEntity(HttpStatus.OK);
     }
+
+    @PutMapping("/list/client/{clientId}")
+    public ResponseEntity<List<Account>> updateList(@PathVariable Long clientId, @RequestBody List<Account> accounts) {
+        List<Account> updatedAccounts = accountService.updateAllAccountsOfClient(accounts, clientId);
+        return new ResponseEntity(updatedAccounts, HttpStatus.OK);
+    }
+
+//    @PatchMapping("/list")
+//    public ResponseEntity patchUpdate() {
+//        // todo
+//        return new ResponseEntity(HttpStatus.OK);
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id) {

@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  *
@@ -22,7 +23,7 @@ import java.math.BigDecimal;
 public class AccountEntity {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private Long clientId;
@@ -30,7 +31,6 @@ public class AccountEntity {
     private BigDecimal balance;
 
     private Currency currency;
-
 
     public Long getId() {
         return id;
@@ -77,6 +77,20 @@ public class AccountEntity {
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
-    
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof AccountEntity == false) {
+            return false;
+        }
+        return Objects.equals(id, ((AccountEntity) obj).id);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
 }

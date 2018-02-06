@@ -27,7 +27,7 @@ public class AccountValidations {
 
     public void validateAccount(Account account) {
 
-        validateNotNull(account,"Null Account not allowed");
+        validateNotNull(account, "Null Account not allowed");
 
         Set<ConstraintViolation<Account>> constraintViolations = validator.validate(account);
         if (!constraintViolations.isEmpty()) {
@@ -41,8 +41,8 @@ public class AccountValidations {
 
     public void accountHasClientId(Account account, Long clientId) throws AccountException {
         if (!Objects.equals(account.getClientId(), clientId)) {
-            throw new AccountException(MicroserviceException.ErrorTypes.validation, "Account " + account.getId() + " " +
-                    "doesn't belong to client with id: " + clientId);
+            throw new AccountException(MicroserviceException.ErrorTypes.validation, "Account " + account.getId() + " "
+                    + "doesn't belong to client with id: " + clientId);
         }
     }
 
@@ -50,7 +50,7 @@ public class AccountValidations {
         accountList.forEach(account -> accountHasClientId(account, clientId));
     }
 
-    public void createValidations (Account account) {
+    public void createValidations(Account account) {
         validateAccount(account);
         if (account.getId() != null) {
             throw new AccountException(MicroserviceException.ErrorTypes.validation,
@@ -58,16 +58,27 @@ public class AccountValidations {
         }
     }
 
-    public void createValidations (List<Account> accounts) {
-        validateNotNull(accounts,"Can't create null accounts");
+    public void createValidations(List<Account> accounts) {
+        validateNotNull(accounts, "Can't create null accounts");
         accounts.forEach(this::createValidations);
     }
 
-    public <T> void validateNotNull (T id, String errorMessage) {
-        if (id == null) {
-            throw new AccountException(MicroserviceException.ErrorTypes.null_argument,errorMessage);
+    public void updateValidations(Account account) {
+        validateAccount(account);
+        if (account.getId() == null) {
+            throw new AccountException(MicroserviceException.ErrorTypes.validation, "Can't update account with null id");
         }
     }
 
+    public void updateValidations(List<Account> accounts) {
+        validateNotNull(accounts, "Null argument");
+        accounts.forEach(this::updateValidations);
+    }
+
+    public <T> void validateNotNull(T id, String errorMessage) {
+        if (id == null) {
+            throw new AccountException(MicroserviceException.ErrorTypes.null_argument, errorMessage);
+        }
+    }
 
 }

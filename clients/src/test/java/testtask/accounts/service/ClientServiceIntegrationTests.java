@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.ResourceAccessException;
 import testtask.accounts.ClientsApplication;
 import testtask.accounts.dao.ClientConverter;
 import testtask.accounts.dao.ClientEntity;
@@ -18,18 +17,16 @@ import testtask.accounts.dao.ClientRepository;
 import testtask.accounts.model.Client;
 
 import java.util.Date;
-import javax.transaction.NotSupportedException;
-import javax.transaction.SystemException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Ignore;
+
 import org.mockito.BDDMockito;
 import org.mockito.Matchers;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import static testtask.accounts.TestHelper.expNotFoundMatcher;
-import static testtask.accounts.TestHelper.expValidationMatcher;
+import static testtask.accounts.ClientTestHelper.expNotFoundMatcher;
+import static testtask.accounts.TestHelper.*;
 import testtask.accounts.exception.ClientException;
 import testtask.accounts.exception.MicroserviceException;
 
@@ -64,7 +61,7 @@ public class ClientServiceIntegrationTests {
         entity.setLastName("Murdock");
         entity.setMiddleName("Michael");
         entity = repository.save(entity);
-        clientData = ClientConverter.entityToModel(entity);
+        clientData = ClientConverter.toModel(entity);
     }
 
     @After
@@ -110,7 +107,7 @@ public class ClientServiceIntegrationTests {
         clientNew = service.create(clientNew);
         assertNotNull(clientNew.getId());
 
-        Client clientFromDb = ClientConverter.entityToModel(repository.findOne(clientNew.getId()));
+        Client clientFromDb = ClientConverter.toModel(repository.findOne(clientNew.getId()));
         assertEquals(clientNew.getFirstName(), clientFromDb.getFirstName());
         assertEquals(clientNew.getMiddleName(), clientFromDb.getMiddleName());
     }
@@ -137,7 +134,7 @@ public class ClientServiceIntegrationTests {
         clientData.setMiddleName(newMiddleName);
         service.update(clientData.getId(), clientData);
 
-        Client clientFromDb = ClientConverter.entityToModel(repository.findOne(clientData.getId()));
+        Client clientFromDb = ClientConverter.toModel(repository.findOne(clientData.getId()));
         assertEquals(newMiddleName, clientFromDb.getMiddleName());
     }
 
@@ -179,14 +176,6 @@ public class ClientServiceIntegrationTests {
     }
 
     @Test
-    @Ignore
-    public void throwResourceExpWhenTryToUseNotExistedMicroservice() {
-        thrown.expect(ResourceAccessException.class);
-
-        service.findWithAccounts(clientData.getId());
-    }
-
-    @Test
     public void rollbackTransactionThenDeleteAccountsWithError() throws Exception {
         thrown.expect(ClientException.class);
 
@@ -196,15 +185,17 @@ public class ClientServiceIntegrationTests {
                 .given(accountMksService)
                 .deleteAccountsByClientId(Matchers.anyLong());
 
-        // then
+        // when
         try {
             service.delete(clientData.getId());
         } catch (Exception e) {
-            // when
+            // then
             final long countClientsAfter = repository.count();
             assertThat(countClientsAfter).isEqualTo(countClientsBefore);
             throw e;
         }
 
     }
+    
+    
 }

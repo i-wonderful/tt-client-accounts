@@ -10,7 +10,7 @@ import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
  *
  * @author Olga Grazhdanova <dvl.java@gmail.com> at Jan 27, 2018
  */
-public class TestHelper {
+public class ClientTestHelper {
 
     /**
      * Create Matcher for not found exception with standard message.
@@ -40,27 +40,27 @@ public class TestHelper {
      *
      * @return
      */
-    public static CustomMatcher<ClientException> expNullArgMatcher() {
-        return expMatcher(ErrorTypes.null_argument);
-    }
+//    public static CustomMatcher<ClientException> expNullArgMatcher() {
+//        return expMatcher(ErrorTypes.null_argument);
+//    }
 
     /**
      * Create Matcher for null argument exception.
      *
      * @return
      */
-    public static CustomMatcher<ClientException> expValidationMatcher() {
-        return expMatcher(ErrorTypes.validation);
-    }
+//    public static CustomMatcher<ClientException> expValidationMatcher() {
+//        return expMatcher(ErrorTypes.validation);
+//    }
 
     /**
      * Create Matcher for bad request to mks exceptions.
      *
      * @return
      */
-    public static CustomMatcher<ClientException> expBadMksRequestMatcher() {
-        return expMatcher(ErrorTypes.bad_mks_request);
-    }
+//    public static CustomMatcher<ClientException> expBadMksRequestMatcher() {
+//        return expMatcher(ErrorTypes.bad_mks_request);
+//    }
 
     /**
      * Create Matcher for ClientException.
@@ -68,15 +68,15 @@ public class TestHelper {
      * @param errType
      * @return
      */
-    public static CustomMatcher<ClientException> expMatcher(ErrorTypes errType) {
-        return new CustomMatcher<ClientException>("Check ClientException for type " + errType.name()) {
-            @Override
-            public boolean matches(Object o) {
-                if (o instanceof ClientException == false) {
-                    return false;
-                }
-                return ((ClientException) o).getType().equals(errType);
-            }
-        };
-    }
+//    public static CustomMatcher<ClientException> expMatcher(ErrorTypes errType) {
+//        return new CustomMatcher<ClientException>("Check ClientException for type " + errType.name()) {
+//            @Override
+//            public boolean matches(Object o) {
+//                if (o instanceof ClientException == false) {
+//                    return false;
+//                }
+//                return ((ClientException) o).getType().equals(errType);
+//            }
+//        };
+//    }
 }

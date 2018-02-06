@@ -47,7 +47,7 @@ public class ClientService {
         if (entity == null) {
             throw new ClientException(id, ErrorTypes.not_found);
         }
-        return ClientConverter.entityToModel(entity);
+        return ClientConverter.toModel(entity);
     }
 
     /**
@@ -69,7 +69,7 @@ public class ClientService {
     }
 
     /**
-     * Create new Client.
+     * Create new Client with accounts.
      *
      * @param client
      * @return
@@ -85,8 +85,8 @@ public class ClientService {
         }
 
         // save client
-        ClientEntity entity = repository.save(ClientConverter.modelToEntity(client));
-        Client clientSaved = ClientConverter.entityToModel(entity);
+        ClientEntity entity = repository.save(ClientConverter.toEntity(client));
+        Client clientSaved = ClientConverter.toModel(entity);
 
         // save accounts
         List<Account> accountsSavesd = accountsMksService.createAccounts(clientSaved.getId(), client.getAccounts());
@@ -96,12 +96,13 @@ public class ClientService {
     }
 
     /**
-     * Update Client.
+     * Update Client with accounts.
      *
      * @param id
      * @param client
      * @return
      */
+    @Transactional
     public Client update(Long id, Client client) {
 
         if (id == null) {
@@ -113,10 +114,12 @@ public class ClientService {
         }
 
         // todo
-        accountsMksService.updateAccounts(client.getAccounts());
+        List<Account> accounts = accountsMksService.updateAccounts(id, client.getAccounts());
 
         client.setId(id);
-        return ClientConverter.entityToModel(repository.save(ClientConverter.modelToEntity(client)));
+        client = ClientConverter.toModel(repository.save(ClientConverter.toEntity(client)));
+        client.setAccounts(accounts);
+        return client;
     }
 
     /**

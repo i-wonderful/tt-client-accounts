@@ -1,15 +1,13 @@
-
 package testtask.accounts.model;
-
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
  * @author Strannica
  */
-
 public class Client {
 
     private Long id;
@@ -23,7 +21,6 @@ public class Client {
     public Client() {
     }
 
-    
     public Client(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -77,13 +74,27 @@ public class Client {
         this.accounts = accounts;
     }
 
-//    @Override
-//    public boolean equals(Object obj) {
-//    
-//        if(obj instanceof Client == false)
-//            return false;
-//        ((Client) obj).getId() 
-//    }
-    
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || obj instanceof Client == false) {
+            return false;
+        }
+
+        if (obj == this) {
+            return true;
+        }
+
+        Client cl = (Client) obj;
+
+        return Objects.equals(id, cl.id) && Objects.equals(firstName, cl.firstName)
+                && Objects.equals(lastName, cl.lastName)
+                && Objects.equals(middleName, cl.middleName)
+                && Objects.equals(birthday, cl.birthday);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, middleName, lastName, birthday);
+    }
+
 }

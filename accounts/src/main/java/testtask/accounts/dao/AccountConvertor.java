@@ -9,7 +9,7 @@ import java.util.List;
  * Created by Alex Volobuev on 25.01.2018.
  */
 public class AccountConvertor {
-    public static Account entityToModel (AccountEntity accountEntity) {
+    public static Account toModel (AccountEntity accountEntity) {
         Account account = new Account();
         account.setId(accountEntity.getId());
         account.setBalance(accountEntity.getBalance());
@@ -19,7 +19,7 @@ public class AccountConvertor {
         return account;
     }
 
-    public static AccountEntity modelToEntity (Account account) {
+    public static AccountEntity toEntity (Account account) {
         AccountEntity accountEntity = new AccountEntity();
         accountEntity.setId(account.getId());
         accountEntity.setBalance(account.getBalance());
@@ -29,17 +29,17 @@ public class AccountConvertor {
         return accountEntity;
     }
 
-    public static List<Account> entityListToModels (Iterable<AccountEntity> accountEntityList) {
+    public static List<Account> toModels (Iterable<AccountEntity> accountEntityList) {
         List<Account> accountList = new ArrayList<>();
         accountEntityList.forEach(accountEntity ->
-                accountList.add(AccountConvertor.entityToModel(accountEntity)));
+                accountList.add(AccountConvertor.toModel(accountEntity)));
         return accountList;
     }
 
-    public static List<AccountEntity> modelsListToEntities (Iterable<Account> accountList) {
+    public static List<AccountEntity> toEntities (Iterable<Account> accountList) {
         List<AccountEntity> entityList = new ArrayList<>();
         accountList.forEach(account ->
-                entityList.add(AccountConvertor.modelToEntity(account)));
+                entityList.add(AccountConvertor.toEntity(account)));
         return entityList;
     }
 

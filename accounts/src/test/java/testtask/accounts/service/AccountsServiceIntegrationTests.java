@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import testtask.accounts.dao.AccountConvertor;
+
 import testtask.accounts.dao.AccountEntity;
 import testtask.accounts.dao.AccountRepository;
 import testtask.accounts.model.Account;
@@ -22,11 +22,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static testtask.accounts.TestHelper.createAccountModel;
-import static testtask.accounts.TestHelper.expNotFoundMatcher;
-import static testtask.accounts.TestHelper.expNullArgMatcher;
-import static testtask.accounts.TestHelper.expValidationMatcher;
-//import testtask.accounts.exception.AccountException;
+import static testtask.accounts.dao.AccountConvertor.*;
+import static testtask.accounts.TestHelper.*;
+import static testtask.accounts.AccountsTestHelper.expNotFoundMatcher;
+
 
 /**
  *
@@ -47,6 +46,7 @@ public class AccountsServiceIntegrationTests {
 
     /* Test Data */
     private Account account;
+    private List<Account> accounts;
 
     @Before
     public void init() {
@@ -57,7 +57,9 @@ public class AccountsServiceIntegrationTests {
         entity.setName("Deposit");
 
         entity = repository.save(entity);
-        account = AccountConvertor.entityToModel(entity);
+        account = toModel(entity);
+
+        accounts = toModels(repository.save(toEntities(createAccountsNullIdsList())));
     }
 
     @After
@@ -67,7 +69,7 @@ public class AccountsServiceIntegrationTests {
 
     @Test
     public void canCreateAccount() {
-        Account createdAccount = createAccountModel(23423, Currency.USD, 55L, "New Wonderful Account");
+        Account createdAccount = createAccount(23423, Currency.USD, 55L, "New Wonderful Account");
 
         createdAccount = service.create(createdAccount);
 
@@ -79,14 +81,14 @@ public class AccountsServiceIntegrationTests {
         assertThat(findCreatedAccountEntity).isNotNull();
 
         // check what created entity is good entity
-        Account findCreatedAccount = AccountConvertor.entityToModel(findCreatedAccountEntity);
+        Account findCreatedAccount = toModel(findCreatedAccountEntity);
         assertThat(createdAccount).isEqualTo(findCreatedAccount);
     }
 
     @Test
     public void canCreateAccountsList() {
-        Account acc1 = createAccountModel(123.12, Currency.RUB, 849L, "Acc1");
-        Account acc2 = createAccountModel(465657.86, Currency.USD, 77L, "Acc2");
+        Account acc1 = createAccount(123.12, Currency.RUB, 849L, "Acc1");
+        Account acc2 = createAccount(465657.86, Currency.USD, 77L, "Acc2");
 
         List<Account> createdAccounts = service.create(Arrays.asList(acc1, acc2));
 
@@ -100,14 +102,14 @@ public class AccountsServiceIntegrationTests {
         assertThat(findCreatedAccountsEntities).hasSize(2);
 
         // check what created accounts is right accounts
-        Iterable<Account> findCreatedAccounts = AccountConvertor.entityListToModels(findCreatedAccountsEntities);
+        Iterable<Account> findCreatedAccounts = toModels(findCreatedAccountsEntities);
         assertThat(findCreatedAccounts).containsExactlyInAnyOrder(createdAccounts.toArray(new Account[2]));
     }
 
     @Test
     public void throwAccountExceptionWhenCreateNewAccountWithId() {
         thrown.expect(expValidationMatcher());
-        Account acc = createAccountModel(444.22, Currency.RUB, 43L, "Catch the exception!");
+        Account acc = createAccount(444.22, Currency.RUB, 43L, "Catch the exception!");
         acc.setId(5345L);
         service.create(acc);
     }
@@ -149,11 +151,37 @@ public class AccountsServiceIntegrationTests {
         Long id = null;
         service.delete(id);
     }
-    
+
     @Test
-    public void canDeleteAllAccountsByClientId(){
+    public void canDeleteAllAccountsByClientId() {
         assertThat(repository.exists(account.getId())).isTrue();
         service.deleteAllAccountsOfClient(account.getClientId());
         assertThat(repository.exists(account.getId())).isFalse();
+    }
+
+    @Test
+    public void updateAccounts() {
+
+        Account accForUpdate = accounts.get(0);
+        long clientId = accForUpdate.getClientId();
+        accForUpdate.setBalance(new BigDecimal(111112222));
+
+        List<Account> accountsUpdated = service.updateAllAccountsOfClient(Arrays.asList(accForUpdate), clientId);
+
+        // one account updated and one was deleted
+        assertThat(accountsUpdated).hasSize(1);
+        assertThat(accountsUpdated.get(0).getBalance()).isEqualTo(accForUpdate.getBalance());
+        assertThat(repository.findByClientId(clientId)).hasSize(1);
+    }
+
+    @Test
+    public void throwExceptionWhenUpdateAccountsWithNullId() {
+        thrown.expect(expValidationMatcher());
+
+        accounts.forEach(acc -> {
+            acc.setId(null);
+        });
+
+        service.updateAllAccountsOfClient(accounts, accounts.get(0).getClientId());
     }
 }

@@ -24,9 +24,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static testtask.accounts.TestHelper.createAccountModel;
+import static testtask.accounts.TestHelper.*;
 
 /**
  *
@@ -63,15 +64,15 @@ public class AccountsControllerMockTests {
     public void findAccountById() throws Exception {
         // given
         long accountId = 1L;
-        final Account account = createAccountModel(accountId, 535234.64, Currency.RUB, 55L, "Deposit Rub");
+        final Account account = createAccount(accountId, 535234.64, Currency.RUB, 55L, "Deposit Rub");
         BDDMockito.given(service.get(1L)).willReturn(account);
 
-        // then
+        // when
         MockHttpServletResponse response = mockMvc.perform(get(URL + "/" + accountId))
                 .andDo(print())
                 .andReturn().getResponse();
 
-        // when
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         Account findAccount = accountJTester.parseObject(response.getContentAsString());
         assertThat(findAccount).isEqualTo(account);
@@ -81,19 +82,19 @@ public class AccountsControllerMockTests {
     public void findAccountsByClientId() throws Exception {
         // given
         final long clientId = 1L;
-        final Account account1 = createAccountModel(111L, 3456.34, Currency.USD, clientId, "Account Main");
-        final Account account2 = createAccountModel(222L, 124234.6, Currency.RUB, clientId, "Deposit One");
+        final Account account1 = createAccount(111L, 3456.34, Currency.USD, clientId, "Account Main");
+        final Account account2 = createAccount(222L, 124234.6, Currency.RUB, clientId, "Deposit One");
         BDDMockito.given(service.findByClientId(clientId)).willReturn(Arrays.asList(account1, account2));
 
-        // then
+        // when
         MockHttpServletResponse response = mockMvc.perform(get(URL + "/ClientId/" + clientId))
                 .andDo(print())
                 .andReturn().getResponse();
 
-        // when
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        
+
         List<Account> accounts = listAccountJTester.parseObject(response.getContentAsString());
         assertThat(accounts).isNotNull().isNotEmpty();
         assertThat(accounts).containsExactlyInAnyOrder(account1, account2);
@@ -103,12 +104,12 @@ public class AccountsControllerMockTests {
     @Test
     public void getBadRequestErrorThenGetAccountByNullClientId() throws Exception {
 
-        // then
+        // when
         MockHttpServletResponse response = mockMvc.perform(get(URL + "/ClientId/"))
                 .andDo(print())
                 .andReturn().getResponse();
 
-        // when
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -118,11 +119,11 @@ public class AccountsControllerMockTests {
         // given
         final long accountId = 123L;
 
-        // then
+        // when
         MockHttpServletResponse response = mockMvc.perform(delete(URL + "/" + accountId))
                 .andDo(print())
                 .andReturn().getResponse();
-        // when
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 
     }
@@ -131,32 +132,56 @@ public class AccountsControllerMockTests {
     public void deleteAccountsByClientId() throws Exception {
         final long clientId = 558L;
 
-        // then
+        // when
         MockHttpServletResponse response = mockMvc.perform(delete(URL + "/clientId/" + clientId))
                 .andDo(print())
                 .andReturn().getResponse();
 
-        // when
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
     @Test
-    public void createAccountsList() throws Exception {
+    public void canCreateAccountsList() throws Exception {
         // given
-        final List<Account> accounts = Arrays.asList(createAccountModel(34545.91, Currency.RUB, 67L, "SomeAcc"));
+        final List<Account> accounts = createAccountsNullIdsList();
         BDDMockito.given(service.create(accounts)).willReturn(accounts);
 
-        // then
-        MockHttpServletResponse response = mockMvc.perform(post(URL + "/list")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(listAccountJTester.write(accounts).getJson()))
+        // when
+        MockHttpServletResponse response = mockMvc.perform(
+                post(URL + "/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(listAccountJTester.write(accounts).getJson()))
                 .andDo(print())
                 .andReturn().getResponse();
 
-        // when
+        // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         List<Account> accountsSaved = listAccountJTester.parseObject(response.getContentAsString());
         assertThat(accountsSaved).hasSameSizeAs(accounts);
+    }
+
+    @Test
+    public void canUpdateAccountsList() throws Exception {
+
+        // given
+        final List<Account> accounts = createAccountsNullIdsList();
+        BDDMockito.given(service.updateAllAccountsOfClient(anyList(), anyLong()))
+                .willReturn(accounts);
+        
+        // when
+        MockHttpServletResponse response = mockMvc.perform(
+                put(URL + "/list/client/55")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(listAccountJTester.write(accounts).getJson()))
+                .andDo(print())
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        List<Account> accountsUpdates = listAccountJTester.parseObject(response.getContentAsString());
+        assertThat(accountsUpdates).hasSameSizeAs(accounts);
+        assertThat(accountsUpdates).isEqualTo(accounts);
     }
 
 }

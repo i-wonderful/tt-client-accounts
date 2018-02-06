@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import testtask.accounts.AccountsApplication;
+import testtask.accounts.ClientsApplication;
 import testtask.accounts.dao.AccountConvertor;
 import testtask.accounts.dao.AccountEntity;
 import testtask.accounts.dao.AccountRepository;
@@ -24,27 +26,19 @@ import testtask.accounts.model.Client;
 import testtask.accounts.model.Currency;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import org.junit.After;
 import java.util.Arrays;
 import java.util.List;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 
-import static org.hamcrest.Matchers.*;
-import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import testtask.accounts.AccountsApplication;
+import static org.assertj.core.api.Assertions.*;
 import static testtask.accounts.TestHelper.*;
 
-//import static org.hamcrest.MatcherAssert.*;
 /**
  *
  * @author Olga Grazhdanova <dvl.java@gmail.com> at Jan 28, 2018
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {/*ClientsApplication.class,*/AccountsApplication.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {ClientsApplication.class, AccountsApplication.class})
 @TestPropertySource(locations = "classpath:application.properties")
 @WithMockUser
 public class MksServiceIntegrationTests {
@@ -95,12 +89,11 @@ public class MksServiceIntegrationTests {
         account2.setBalance(new BigDecimal(754555));
         account2.setClientId(clientWithAccountsEntity.getId());
 
-        List<AccountEntity> accountsEntities = new ArrayList<>();
-        accountRepository.save(Arrays.asList(account1, account2)).forEach(accountsEntities::add);
+        Iterable<AccountEntity> accountsEntities = accountRepository.save(Arrays.asList(account1, account2));
 
-        clientWithAccounts = ClientConverter.entityToModel(clientWithAccountsEntity);
-        accounts = AccountConvertor.entityListToModels(accountsEntities);
-        clientWithoutAccounts = ClientConverter.entityToModel(clientWithoutAccountsEntity);
+        clientWithAccounts = ClientConverter.toModel(clientWithAccountsEntity);
+        accounts = AccountConvertor.toModels(accountsEntities);
+        clientWithoutAccounts = ClientConverter.toModel(clientWithoutAccountsEntity);
     }
 
     @After
@@ -111,22 +104,21 @@ public class MksServiceIntegrationTests {
         if (clientRepository.exists(clientWithoutAccounts.getId())) {
             clientRepository.delete(clientWithoutAccounts.getId());
         }
-        accountRepository.delete(AccountConvertor.modelsListToEntities(accounts));
+        accountRepository.delete(AccountConvertor.toEntities(accounts));
     }
 
     @Test
     public void findClientWithAccounts() {
         Client clientFind = clientService.findWithAccounts(clientWithAccounts.getId());
 
-        assertNotNull(clientFind);
-        assertNotNull(clientFind.getAccounts());
+        assertThat(clientFind).isNotNull();
+        assertThat(clientFind.getAccounts()).isNotNull().isNotEmpty();
 
         // check client
-        assertEquals(clientWithAccounts.getFirstName(), clientFind.getFirstName());
-        assertEquals(clientWithAccounts.getLastName(), clientFind.getLastName());
+        assertThat(clientWithAccounts).isEqualTo(clientFind);
 
         // check accounts
-        assertThat(clientFind.getAccounts(), containsInAnyOrder(accounts.toArray()));
+        assertThat(clientFind.getAccounts()).isEqualTo(accounts);
 
     }
 
@@ -142,10 +134,10 @@ public class MksServiceIntegrationTests {
     public void findClientWitoutAccounts() {
         Client clientFind = clientService.findWithAccounts(clientWithoutAccounts.getId());
 
-        assertNotNull(clientFind);
-        assertNotNull(clientFind.getAccounts());
+        assertThat(clientFind).isNotNull();
+        assertThat(clientFind.getAccounts()).isNotNull();
 
-        assertTrue(clientFind.getAccounts().isEmpty());
+        assertThat(clientFind.getAccounts()).isEmpty();
     }
 
     @Test
@@ -154,8 +146,8 @@ public class MksServiceIntegrationTests {
         final long clientId = clientWithAccounts.getId();
         clientService.delete(clientId);
 
-        assertThat("Client is not delete by Id", clientRepository.exists(clientId), is(false));
-        assertThat("Accounts was not deleted by clientId", accountRepository.findByClientId(clientId), hasSize(0));
+        assertThat(clientRepository.exists(clientId)).isFalse(); // "Client is not delete by Id"
+        assertThat(accountRepository.findByClientId(clientId)).isEmpty();// "Accounts was not deleted by clientId"
     }
 
     @Test
@@ -176,13 +168,13 @@ public class MksServiceIntegrationTests {
         clientNew.setAccounts(Arrays.asList(acc, acc2));
 
         Client clientSaved = clientService.create(clientNew);
-        assertNotNull(clientSaved);
-        assertNotNull(clientSaved.getAccounts());
+        assertThat(clientSaved).isNotNull();
+        assertThat(clientSaved.getAccounts()).isNotNull();
 
-        assertThat(clientRepository.exists(clientSaved.getId()), is(true));
-        assertThat(clientSaved.getAccounts(), hasSize(2));
-        assertThat(accountRepository.exists(clientSaved.getAccounts().get(0).getId()), is(true));
-        assertThat(accountRepository.exists(clientSaved.getAccounts().get(1).getId()), is(true));
+        assertThat(clientRepository.exists(clientSaved.getId())).isTrue();
+        assertThat(clientSaved.getAccounts()).hasSize(2);
+        assertThat(accountRepository.exists(clientSaved.getAccounts().get(0).getId())).isTrue();
+        assertThat(accountRepository.exists(clientSaved.getAccounts().get(1).getId())).isTrue();
     }
 
     @Test
@@ -210,23 +202,63 @@ public class MksServiceIntegrationTests {
         thrown.expect(expBadMksRequestMatcher());
         thrown.expectMessage("Can't create Account with predefined id");
 
-        long countClients = clientRepository.count();
-        long countAccounts = accountRepository.count();
+        long countClientsBefore = clientRepository.count();
+        long countAccountsBefore = accountRepository.count();
 
         Client clientNew = new Client("John", "Jocker");
         clientNew.setAccounts(accounts);
         try {
             clientService.create(clientNew);
         } catch (Exception e) {
-            long countClientsNew = clientRepository.count();
-            long countAccountsNew = accountRepository.count();
+            long countClientsAfter = clientRepository.count();
+            long countAccountsAfter = accountRepository.count();
             // nothing created
-            assertThat(countClientsNew, is(countClients));
-            assertThat(countAccountsNew, is(countAccounts));
+            assertThat(countClientsAfter).isEqualTo(countClientsBefore);
+            assertThat(countAccountsAfter).isEqualTo(countAccountsBefore);
             throw e;
         }
     }
-    
+
+    @Test
+    public void canUpdateClientWithAccounts() {
+
+        final BigDecimal newBalance = new BigDecimal(11112222);
+        final String newName = "Richard";
+        Account accountChanged = accounts.get(0);
+        accountChanged.setBalance(newBalance);
+        clientWithAccounts.setAccounts(accounts);
+        clientWithAccounts.setFirstName(newName);
+
+        clientService.update(clientWithAccounts.getId(), clientWithAccounts);
+
+        // check
+        AccountEntity accountUpdated = accountRepository.findOne(accountChanged.getId());
+        ClientEntity clientUpdated = clientRepository.findOne(clientWithAccounts.getId());
+
+        assertThat(clientUpdated.getFirstName()).isEqualTo(newName);
+        assertThat(accountUpdated.getBalance().doubleValue()).isEqualTo(newBalance.doubleValue());
+    }
+
+    @Test
+    public void rollbackTransactionWhenTryUpdateClientWithAccountsNullId() {
+
+        thrown.expect(expBadMksRequestMatcher());
+
+        final String newLastName = "SomeNewLastName";
+        accounts.forEach(acc -> acc.setId(null));
+        clientWithAccounts.setAccounts(accounts);
+        clientWithAccounts.setLastName(newLastName);
+        try {
+            clientService.update(clientWithAccounts.getId(), clientWithAccounts);
+        } catch (Exception e) {
+
+            Client notUpdatedClient = clientService.findOne(clientWithAccounts.getId());
+            assertThat(notUpdatedClient.getLastName()).isNotEqualTo(newLastName);
+
+            throw e;
+        }
+
+    }
 //    public void rollbackTransactionThenTryToDeleteNullAccount(){
 //    
 //    long countClient = clientRepository.count();

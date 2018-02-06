@@ -1,5 +1,7 @@
 package testtask.accounts.service;
 
+import com.google.common.collect.Sets;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,9 +40,9 @@ public class AccountService {
     public Account create(Account account) {
 
         validations.createValidations(account);
-        AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
+        AccountEntity accountEntity = AccountConvertor.toEntity(account);
         accountEntity = repository.save(accountEntity);
-        account = AccountConvertor.entityToModel(accountEntity);
+        account = AccountConvertor.toModel(accountEntity);
         log.info("Create account: " + account);
         return account;
     }
@@ -53,9 +55,9 @@ public class AccountService {
      */
     public List<Account> create(List<Account> accounts) {
         validations.createValidations(accounts);
-        Iterable<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
+        Iterable<AccountEntity> accountEntities = AccountConvertor.toEntities(accounts);
         accountEntities = repository.save(accountEntities);
-        accounts = AccountConvertor.entityListToModels(accountEntities);
+        accounts = AccountConvertor.toModels(accountEntities);
         log.info("Create List Accounts: " + accounts.toString());
         return accounts;
     }
@@ -66,14 +68,14 @@ public class AccountService {
             throw new AccountException(ErrorTypes.not_found,
                     "Account with id: " + id + " not found");
         }
-        Account account = AccountConvertor.entityToModel(accountEntity);
+        Account account = AccountConvertor.toModel(accountEntity);
         log.info("Get account: " + account);
         return account;
     }
 
     public void update(Account account) {
         validations.validateAccount(account);
-        AccountEntity accountEntity = AccountConvertor.modelToEntity(account);
+        AccountEntity accountEntity = AccountConvertor.toEntity(account);
         log.info("Update account: " + account);
         repository.save(accountEntity);
     }
@@ -94,7 +96,7 @@ public class AccountService {
      * @param id
      */
     public void delete(Long id) {
-        validations.validateNotNull(id,"Can't delete account with id = null");
+        validations.validateNotNull(id, "Can't delete account with id = null");
         if (!repository.exists(id)) {
             throw new AccountException(ErrorTypes.not_found, id);
         }
@@ -103,32 +105,46 @@ public class AccountService {
     }
 
     public void delete(List<Account> accounts) {
-        validations.validateNotNull(accounts,"can't delete null accounts");
+        validations.validateNotNull(accounts, "can't delete null accounts");
         log.info("Delete list accounts: {} ", accounts);
-        repository.delete(AccountConvertor.modelsListToEntities(accounts));
+        repository.delete(AccountConvertor.toEntities(accounts));
     }
 
     public List<Account> getAll() {
         Iterable<AccountEntity> accountEntities = repository.findAll();
-        List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
+        List<Account> accounts = AccountConvertor.toModels(accountEntities);
         log.info("Get all accounts: " + accounts);
         return accounts;
     }
 
     public List<Account> findByClientId(Long clientId) {
-        validations.validateNotNull(clientId,"client id is null");
+        validations.validateNotNull(clientId, "client id is null");
         List<AccountEntity> accountEntities = repository.findByClientId(clientId);
-        List<Account> accounts = AccountConvertor.entityListToModels(accountEntities);
+        List<Account> accounts = AccountConvertor.toModels(accountEntities);
         log.info("Find all accounts of client with ID {} : {}", clientId, accounts);
         return accounts;
     }
 
-    public void updateAllAccountsOfClient(List<Account> accounts, Long clientId) {
-        //TODO delete all before bulk update
+    /**
+     * Update list accounts and delete others client's accounts.
+     *
+     * @param accounts list accounts for update
+     * @param clientId client id
+     * @return
+     */
+    public List<Account> updateAllAccountsOfClient(List<Account> accounts, Long clientId) {
+
         validations.allAccountsHasClientId(accounts, clientId);
-        List<AccountEntity> accountEntities = AccountConvertor.modelsListToEntities(accounts);
-        repository.save(accountEntities);
-        log.info("Bulk account update of client with ID {} : {}", clientId, accounts);
+        validations.updateValidations(accounts);
+
+        List<AccountEntity> accountForUpdate = AccountConvertor.toEntities(accounts);
+        List<AccountEntity> accountsForDelete = repository.findByClientId(clientId);
+        accountsForDelete.removeAll(accountForUpdate);
+
+        repository.delete(accountsForDelete);
+        accounts = AccountConvertor.toModels(repository.save(accountForUpdate));
+        log.info("Bulk account update of client with ID {} : {}", clientId, accountsForDelete);
+        return accounts;
     }
 
     /**
@@ -136,7 +152,7 @@ public class AccountService {
      * @param clientId
      */
     public void deleteAllAccountsOfClient(Long clientId) {
-        validations.validateNotNull(clientId,"clientId is null");
+        validations.validateNotNull(clientId, "clientId is null");
         List<AccountEntity> accountEntities = repository.findByClientId(clientId);
         repository.delete(accountEntities);
         log.info("Bulk account delete of client with ID {} : {}", clientId, accountEntities);

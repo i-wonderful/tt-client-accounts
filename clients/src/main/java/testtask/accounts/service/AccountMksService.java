@@ -18,6 +18,7 @@ import testtask.accounts.exception.ClientException;
 import testtask.accounts.model.Account;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import testtask.accounts.util.MksUtil;
@@ -96,14 +97,13 @@ public class AccountMksService {
         accounts.forEach(acc -> {
             acc.setClientId(clientId);
         });
-        
+
         String url = getBaseAccountUrl("/list");
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
         log.info("Mks Request: create accounts, url: {} ", url);
-        HttpEntity<List<?>> requestEntity = new HttpEntity<>(accounts, headers);
 
+        //
+        HttpEntity<List<?>> requestEntity = wrapToSend(accounts);
         ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
 
         if (response.getStatusCode().equals(HttpStatus.OK)) {
@@ -114,10 +114,29 @@ public class AccountMksService {
         }
     }
 
-    public List<Account> updateAccounts(List<Account> accounts) {
-        // todo
+    /**
+     *
+     * @param clientId
+     * @param accounts
+     * @return
+     */
+    public List<Account> updateAccounts(Long clientId, List<Account> accounts) {
+        if (accounts == null || accounts.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
 
-        return accounts;
+        String url = getBaseAccountUrl("/list/client/" + clientId);
+        log.info("Mks Request: update accounts, url: {} ", url);
+
+        HttpEntity<List<?>> requestEntity = wrapToSend(accounts);
+        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, Object.class);
+
+        if (response.getStatusCode().equals(HttpStatus.OK)) {
+            Account[] accountsSaved = MksUtil.parseResponse(response.getBody(), Account[].class);
+            return Arrays.asList(accountsSaved);
+        } else {
+            throw MksUtil.createClientExceptionFromResponseError(response.getBody(), url);
+        }
     }
 
     private String getBaseAccountUrl(String path) {
@@ -125,6 +144,14 @@ public class AccountMksService {
         uri.scheme("http").host(HOST).port(PORT).path(URL_ACCOUNTS);
 
         return uri.toUriString() + ((path != null) ? path : "");
+    }
+
+    private HttpEntity<List<?>> wrapToSend(List<Account> accounts) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<List<?>> requestEntity = new HttpEntity<>(accounts, headers);
+        return requestEntity;
     }
 
 }

@@ -21,6 +21,15 @@
             <artifactId>common</artifactId>
             <version>1.0</version>
         </dependency>
+        
+        <dependency>
+            <groupId>test-task</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+        
     </dependencies>
 
 </project>
