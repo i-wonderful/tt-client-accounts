@@ -28,6 +28,8 @@ import static org.mockito.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static testtask.accounts.TestHelper.*;
+import testtask.accounts.exception.AccountException;
+import testtask.accounts.exception.ApiErrorDto;
 
 /**
  *
@@ -48,6 +50,7 @@ public class AccountsControllerMockTests {
 
     private JacksonTester<Account> accountJTester;
     private JacksonTester<List<Account>> listAccountJTester;
+    private JacksonTester<ApiErrorDto> errorDtoJTester;
 
     @Before
     public void init() {

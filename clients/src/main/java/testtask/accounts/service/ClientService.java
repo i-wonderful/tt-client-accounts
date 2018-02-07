@@ -98,7 +98,7 @@ public class ClientService {
         });
         
 //        job1 = job1.subscribeOn(Schedulers.io());
-        jobAccountSave = jobAccountSave.subscribeOn(Schedulers.io());
+//        jobAccountSave = jobAccountSave.subscribeOn(Schedulers.io());
         
         Client clientResult = Single.zip(jobClientSave, jobAccountSave, (Client clientSaved, List<Account> accountsSaved) -> {
             clientSaved.setAccounts(accountsSaved);
@@ -177,7 +177,6 @@ public class ClientService {
 
         // multithreading
         jobAccountsMks = jobAccountsMks.subscribeOn(Schedulers.io());
-//         job2 = job2.subscribeOn(Schedulers.io());
 
         // wait both actions
         jobMain.mergeWith(jobAccountsMks).blockingAwait();

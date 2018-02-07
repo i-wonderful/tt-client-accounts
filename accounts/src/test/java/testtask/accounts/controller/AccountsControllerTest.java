@@ -25,12 +25,9 @@ import testtask.accounts.service.AccountService;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import org.junit.Ignore;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -47,7 +44,6 @@ public class AccountsControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private JacksonTester<Account> jacksonTester;
     private JacksonTester<ApiErrorDto> jacksonErrorTester;
 
     private Account account;
@@ -82,30 +78,6 @@ public class AccountsControllerTest {
         accountService.delete(account);
     }
 
-    @Test
-    @Ignore
-    public void getAll() throws Exception {
-        mockMvc.perform(get("/accounts"))
-                .andDo(print())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void create() throws Exception {
-    }
-
-//    @Test
-////    @Ignore
-//    public void getById() throws Exception {
-//        MockHttpServletResponse response = mockMvc
-//                .perform(get("/accounts/" + account.getId()))
-//                .andReturn().getResponse();
-//
-//        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-//        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
-//        assertThat(response.getContentAsString()).isEqualTo(jacksonTester.write(account).getJson());
-//    }
 
     @Test
     public void getErrorDtoWhenRequestNotExistingAccount() throws Exception {
@@ -126,7 +98,6 @@ public class AccountsControllerTest {
     @Test
     public void update() throws Exception {
 
-
         mockMvc.perform(put("/accounts/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("  {\n" +
@@ -137,11 +108,6 @@ public class AccountsControllerTest {
                         "   }"))
                 .andExpect(status().isOk());
 
-
-    }
-
-    @Test
-    public void delete() throws Exception {
     }
 
 }

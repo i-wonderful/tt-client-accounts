@@ -3,6 +3,8 @@ package testtask.accounts.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import org.springframework.core.ParameterizedTypeReference;
 import testtask.accounts.exception.ApiErrorDto;
 import testtask.accounts.exception.ClientException;
 import static testtask.accounts.exception.MicroserviceException.*;

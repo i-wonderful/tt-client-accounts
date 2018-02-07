@@ -17,9 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import testtask.accounts.exception.ClientException;
 import testtask.accounts.model.Account;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.core.ParameterizedTypeReference;
 
 import testtask.accounts.util.MksUtil;
 
@@ -44,6 +44,9 @@ public class AccountMksService {
     @Autowired
     private RestTemplate restTemplate;
 
+    private final ParameterizedTypeReference<List<Account>> typeAccountList = new ParameterizedTypeReference<List<Account>>() {
+    };
+
     /**
      * Find Accounts by ClientId
      *
@@ -52,17 +55,9 @@ public class AccountMksService {
      */
     public List<Account> findAccountsByClientId(Long clientId) throws ClientException, RestClientResponseException {
         String url = getBaseAccountUrl("/ClientId/" + clientId);
-
         log.info("Mks Request: find accounts by clientId, url: " + url);
 
-        ResponseEntity<Object> response = restTemplate.getForEntity(url, Object.class);
-
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            Account[] accounts = MksUtil.parseResponse(response.getBody(), Account[].class);
-            return Arrays.asList(accounts);
-        } else {
-            throw MksUtil.createClientExceptionFromResponseError(response.getBody(), url);
-        }
+        return sendRequest(url, HttpEntity.EMPTY, HttpMethod.GET, typeAccountList);
 
     }
 
@@ -73,7 +68,6 @@ public class AccountMksService {
      */
     public void deleteAccountsByClientId(Long clientId) throws ClientException, RestClientException {
         String url = getBaseAccountUrl("/clientId/" + clientId);
-
         log.info("Mks Request: delete accounts by clientId, url: {}", url);
 
         ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity.EMPTY, Object.class);
@@ -90,8 +84,8 @@ public class AccountMksService {
      * @return
      */
     public List<Account> createAccounts(Long clientId, List<Account> accounts) throws ClientException {
-        if (accounts.isEmpty()) {
-            return accounts;
+        if (accounts == null || accounts.isEmpty()) {
+            return Collections.EMPTY_LIST;
         }
 
         accounts.forEach(acc -> {
@@ -99,19 +93,9 @@ public class AccountMksService {
         });
 
         String url = getBaseAccountUrl("/list");
-
         log.info("Mks Request: create accounts, url: {} ", url);
 
-        //
-        HttpEntity<List<?>> requestEntity = wrapToSend(accounts);
-        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Object.class);
-
-        if (response.getStatusCode().equals(HttpStatus.OK)) {
-            Account[] accountsSaved = MksUtil.parseResponse(response.getBody(), Account[].class);
-            return Arrays.asList(accountsSaved);
-        } else {
-            throw MksUtil.createClientExceptionFromResponseError(response.getBody(), url);
-        }
+        return sendRequest(url, accounts, HttpMethod.POST, typeAccountList);
     }
 
     /**
@@ -128,12 +112,19 @@ public class AccountMksService {
         String url = getBaseAccountUrl("/list/client/" + clientId);
         log.info("Mks Request: update accounts, url: {} ", url);
 
-        HttpEntity<List<?>> requestEntity = wrapToSend(accounts);
-        ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, Object.class);
+        return sendRequest(url, accounts, HttpMethod.PUT, typeAccountList);
+
+    }
+    
+     private <T extends Object> List<T> sendRequest(String url, Object content, HttpMethod method, ParameterizedTypeReference<List<T>> typeReference) {
+         return sendRequest(url, wrapToSend(content), method, typeReference);
+     }
+
+    private <T extends Object> List<T> sendRequest(String url, HttpEntity<?> requestEntity, HttpMethod method, ParameterizedTypeReference<List<T>> typeReference) {
+        ResponseEntity<List<T>> response = restTemplate.exchange(url, method, requestEntity, typeReference);
 
         if (response.getStatusCode().equals(HttpStatus.OK)) {
-            Account[] accountsSaved = MksUtil.parseResponse(response.getBody(), Account[].class);
-            return Arrays.asList(accountsSaved);
+            return response.getBody();
         } else {
             throw MksUtil.createClientExceptionFromResponseError(response.getBody(), url);
         }
@@ -146,11 +137,15 @@ public class AccountMksService {
         return uri.toUriString() + ((path != null) ? path : "");
     }
 
-    private HttpEntity<List<?>> wrapToSend(List<Account> accounts) {
+    private HttpEntity<?> wrapToSend(Object content) {
 
+        if (content == null) {
+            return HttpEntity.EMPTY;
+        }
+        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<List<?>> requestEntity = new HttpEntity<>(accounts, headers);
+        HttpEntity<?> requestEntity = new HttpEntity<>(content, headers);
         return requestEntity;
     }
 

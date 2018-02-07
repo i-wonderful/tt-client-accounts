@@ -20,9 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static testtask.accounts.TestHelper.*;
+import org.springframework.core.ParameterizedTypeReference;
+import static org.mockito.Matchers.any;
 
 /**
  *
@@ -51,7 +52,7 @@ public class AccountMksServiceMockTests {
     }
 
     @Test
-    public void throwExceptionThenDeleteAccountsAndGetErrorResponse() {
+    public void throwExceptionWhenDeleteAccountsAndGetErrorResponse() {
         // expect 
         thrown.expect(expBadMksRequestMatcher());
         thrown.expectMessage("Mks Accounts Error, url");
@@ -61,7 +62,7 @@ public class AccountMksServiceMockTests {
         ResponseEntity<ApiErrorDto> responseWithError = new ResponseEntity<>(errorApi, HttpStatus.INTERNAL_SERVER_ERROR);
         mockRequestExchange(responseWithError);
 
-        // then
+        // when
         accountMksService.deleteAccountsByClientId(1L);
 
     }
@@ -70,27 +71,27 @@ public class AccountMksServiceMockTests {
     public void findAccountsByClientIdWithOkResponse() {
         // given
         final List<Account> accounts = createAccountsNotNullIdList();
-        mockRequestGetForEntity(new ResponseEntity(accounts, HttpStatus.OK));
-
-        // when
-        List<Account> accountsFind = accountMksService.findAccountsByClientId(1L);
+        mockRequestExchangeForList(new ResponseEntity(accounts, HttpStatus.OK));
 
         // then
+        List<Account> accountsFind = accountMksService.findAccountsByClientId(1L);
+
+        // when
         assertThat(accountsFind).hasSameSizeAs(accounts);
         assertThat(accountsFind).isEqualTo(accounts);
     }
 
     @Test
-    public void throwExceptionThenFindAccountsAndGetErrorResponse() {
+    public void throwExceptionWhenFindAccountsMksReturnError() {
         // expect
         thrown.expect(expBadMksRequestMatcher());
         thrown.expectMessage("Mks Accounts Error, url");
 
         // given
         final ApiErrorDto errorDto = createErrorDto();
-        mockRequestGetForEntity(new ResponseEntity(errorDto, HttpStatus.INTERNAL_SERVER_ERROR));
+        mockRequestExchangeForList(new ResponseEntity(errorDto, HttpStatus.INTERNAL_SERVER_ERROR));
 
-        // then
+        // when
         accountMksService.findAccountsByClientId(1L);
 
     }
@@ -100,7 +101,7 @@ public class AccountMksServiceMockTests {
 
         // given
         final List<Account> accounts = Arrays.asList(createAccount());
-        mockRequestExchange(new ResponseEntity(accounts, HttpStatus.OK));
+        mockRequestExchangeForList(new ResponseEntity(accounts, HttpStatus.OK));
 
         // when
         List<Account> accountsSaved = accountMksService.createAccounts(1L, accounts);
@@ -112,13 +113,13 @@ public class AccountMksServiceMockTests {
     }
 
     @Test
-    public void throwExceptionThenCreateAccountsMksReturnError() {
+    public void throwExceptionWhenCreateAccountsMksReturnError() {
 
         // expect
         thrown.expect(expBadMksRequestMatcher());
 
         // given
-        mockRequestExchange(new ResponseEntity(createErrorDto(), HttpStatus.INTERNAL_SERVER_ERROR));
+        mockRequestExchangeForList(new ResponseEntity(createErrorDto(), HttpStatus.INTERNAL_SERVER_ERROR));
 
         // when
         accountMksService.createAccounts(1L, createAccountsNotNullIdList());
@@ -128,7 +129,7 @@ public class AccountMksServiceMockTests {
     public void canUpdateAccounts() {
         // given
         final List<Account> accounts = createAccountsNotNullIdList();
-        mockRequestExchange(new ResponseEntity(accounts, HttpStatus.OK));
+        mockRequestExchangeForList(new ResponseEntity(accounts, HttpStatus.OK));
 
         // when
         List<Account> accountsUpdated = accountMksService.updateAccounts(accounts.get(0).getClientId(), accounts);
@@ -137,11 +138,31 @@ public class AccountMksServiceMockTests {
         assertThat(accountsUpdated).isEqualTo(accounts);
     }
 
+    @Test
+    public void throwExceptionWhenUpdateAccountsMksReturnError() {
+        // expect
+        thrown.expect(expBadMksRequestMatcher());
+
+        // given
+        mockRequestExchangeForList(new ResponseEntity(createErrorDto(), HttpStatus.INTERNAL_SERVER_ERROR));
+
+        // when
+        accountMksService.updateAccounts(1L, createAccountsNullIdsList());
+    }
+
     private void mockRequestExchange(final ResponseEntity response) {
         BDDMockito.given(restTemplate.exchange(anyString(),
                 any(HttpMethod.class),
                 Matchers.<HttpEntity<?>>any(),
                 any(Class.class)))
+                .willReturn(response);
+    }
+
+    private void mockRequestExchangeForList(final ResponseEntity response) {
+        BDDMockito.given(restTemplate.exchange(anyString(),
+                any(HttpMethod.class),
+                Matchers.<HttpEntity<?>>any(),
+                Matchers.<ParameterizedTypeReference<?>>any()))
                 .willReturn(response);
     }
 
