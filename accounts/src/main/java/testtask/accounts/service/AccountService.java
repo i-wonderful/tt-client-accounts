@@ -74,7 +74,7 @@ public class AccountService {
     }
 
     public void update(Account account) {
-        validations.validateAccount(account);
+        validations.validateItem(account);
         AccountEntity accountEntity = AccountConvertor.toEntity(account);
         log.info("Update account: " + account);
         repository.save(accountEntity);
@@ -86,7 +86,7 @@ public class AccountService {
      * @param account
      */
     public void delete(Account account) {
-        validations.validateAccount(account);
+        validations.validateItem(account);
         delete(account.getId());
     }
 

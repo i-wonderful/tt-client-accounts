@@ -2,6 +2,7 @@ package testtask.accounts.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import testtask.accounts.validation.BaseValidator;
 import testtask.accounts.exception.AccountException;
 import testtask.accounts.exception.MicroserviceException;
 import testtask.accounts.model.Account;
@@ -16,7 +17,7 @@ import java.util.Set;
  * Created by Alex Volobuev on 28.01.2018.
  */
 @Component
-public class AccountValidations {
+public class AccountValidations extends BaseValidator<Account, AccountException> {
 
     private final Validator validator;
 
@@ -25,7 +26,8 @@ public class AccountValidations {
         this.validator = validator;
     }
 
-    public void validateAccount(Account account) {
+    @Override
+    public void validateItem(Account account) {
 
         validateNotNull(account, "Null Account not allowed");
 
@@ -39,6 +41,11 @@ public class AccountValidations {
         }
     }
 
+    @Override
+    protected AccountException createException(MicroserviceException.ErrorTypes errorType, String message) {
+        throw new AccountException(errorType, message.replace("{items}", "accounts").replace("{item}", "{account}"));
+    }
+
     public void accountHasClientId(Account account, Long clientId) throws AccountException {
         if (!Objects.equals(account.getClientId(), clientId)) {
             throw new AccountException(MicroserviceException.ErrorTypes.validation, "Account " + account.getId() + " "
@@ -48,37 +55,6 @@ public class AccountValidations {
 
     public void allAccountsHasClientId(List<Account> accountList, Long clientId) throws AccountException {
         accountList.forEach(account -> accountHasClientId(account, clientId));
-    }
-
-    public void createValidations(Account account) {
-        validateAccount(account);
-        if (account.getId() != null) {
-            throw new AccountException(MicroserviceException.ErrorTypes.validation,
-                    "Can't create Account with predefined id: " + account.getId());
-        }
-    }
-
-    public void createValidations(List<Account> accounts) {
-        validateNotNull(accounts, "Can't create null accounts");
-        accounts.forEach(this::createValidations);
-    }
-
-    public void updateValidations(Account account) {
-        validateAccount(account);
-        if (account.getId() == null) {
-            throw new AccountException(MicroserviceException.ErrorTypes.validation, "Can't update account with null id");
-        }
-    }
-
-    public void updateValidations(List<Account> accounts) {
-        validateNotNull(accounts, "Null argument");
-        accounts.forEach(this::updateValidations);
-    }
-
-    public <T> void validateNotNull(T id, String errorMessage) {
-        if (id == null) {
-            throw new AccountException(MicroserviceException.ErrorTypes.null_argument, errorMessage);
-        }
     }
 
 }

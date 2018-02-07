@@ -17,6 +17,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
+import testtask.accounts.validator.ClientValidator;
 
 /**
  * Created by Alex Volobuev on 24.01.2018.
@@ -27,13 +28,14 @@ import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 public class ClientService {
 
     private final ClientRepository repository;
-
+    private final ClientValidator clientValidator;
     private final AccountMksService accountsMksService;
 
     @Autowired
-    public ClientService(AccountMksService accMksService, ClientRepository repository) {
+    public ClientService(AccountMksService accMksService, ClientRepository repository, ClientValidator clientValidator) {
         this.repository = repository;
         this.accountsMksService = accMksService;
+        this.clientValidator = clientValidator;
     }
 
     /**

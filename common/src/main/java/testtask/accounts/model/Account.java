@@ -12,9 +12,7 @@ import java.util.Objects;
  *
  * @author Strannica
  */
-public class Account {
-
-    private Long id;
+public class Account extends BaseModel{
 
     @NotNull
     @Digits(integer = 6, fraction = 0)
@@ -47,14 +45,6 @@ public class Account {
 
     public void setClientId(Long clientId) {
         this.clientId = clientId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
