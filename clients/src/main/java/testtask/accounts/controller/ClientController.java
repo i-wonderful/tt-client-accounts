@@ -1,6 +1,8 @@
 package testtask.accounts.controller;
 
 import io.swagger.annotations.Api;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +21,7 @@ import testtask.accounts.service.ClientService;
  * @author Strannica
  */
 @RestController
-@RequestMapping(value = "/client")
+@RequestMapping(value = "/clients")
 @Api(value = "clients", description = "Rest API for clients operations", tags = "Clients API")
 public class ClientController {
 
@@ -29,6 +31,11 @@ public class ClientController {
         this.clientService = clientSErvice;
     }
 
+    @GetMapping
+    public final String hola() throws UnknownHostException {
+        return "Hola! Puedes encontrarme en " + InetAddress.getLocalHost().getHostAddress();
+    }
+    
     @GetMapping(value = "/{id}")
     public ResponseEntity<Client> get(@PathVariable Long id) {
         Client client = clientService.findOne(id);

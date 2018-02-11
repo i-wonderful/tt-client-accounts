@@ -59,3 +59,4 @@ fabric.properties
 /common/nbproject/
 /clients/nbactions.xml
 /testing/target/
+/clients/src/test/java/testtask/accounts/service/ClientServiceMockTests.java

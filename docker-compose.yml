@@ -1,0 +1,14 @@
+version: '2.2'
+services:
+  clients-mks:
+     build:
+       context: ./
+       dockerfile: Dockerfile-build
+     image: clients-mks-mvn-build
+     ports: 
+       - 8080
+     networks:
+       - network1   
+
+networks:
+ network1:

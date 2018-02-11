@@ -40,6 +40,7 @@ import static testtask.accounts.exception.MicroserviceException.ErrorTypes;
 @RunWith(MockitoJUnitRunner.class)
 public class ClientControllerMockTests {
 
+    private static final String URL = "/clients";
     private MockMvc mockMvc;
 
     @Mock
@@ -71,7 +72,7 @@ public class ClientControllerMockTests {
                 .willThrow(new ClientException(notExistedClientId, ErrorTypes.not_found));
 
         // when
-        MockHttpServletResponse response = mockMvc.perform(get("/client/" + notExistedClientId))
+        MockHttpServletResponse response = mockMvc.perform(get( URL + "/" + notExistedClientId))
                 .andDo(print())
                 .andReturn().getResponse();
 
@@ -93,7 +94,7 @@ public class ClientControllerMockTests {
         BDDMockito.given(clientService.findOne(1L)).willReturn(client);
 
         // when
-        MockHttpServletResponse response = mockMvc.perform(get("/client/1"))
+        MockHttpServletResponse response = mockMvc.perform(get(URL + "/1"))
                 .andDo(print())
                 .andReturn().getResponse();
 
@@ -116,7 +117,7 @@ public class ClientControllerMockTests {
         });
 
         // when
-        MockHttpServletResponse response = mockMvc.perform(post("/client")
+        MockHttpServletResponse response = mockMvc.perform(post(URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jacksonTester.write(client).getJson()))
                 .andDo(print())
@@ -139,7 +140,7 @@ public class ClientControllerMockTests {
         BDDMockito.given(clientService.update(clientId, client)).willReturn(client);
 
         // when
-        MockHttpServletResponse response = mockMvc.perform(put("/client/" + clientId)
+        MockHttpServletResponse response = mockMvc.perform(put(URL + "/" + clientId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jacksonTester.write(client).getJson()))
                 .andDo(print())
@@ -153,7 +154,7 @@ public class ClientControllerMockTests {
     public void canDeleteClient() throws Exception {
 
         // when
-        MockHttpServletResponse response = mockMvc.perform(delete("/client/1"))
+        MockHttpServletResponse response = mockMvc.perform(delete(URL + "/1"))
                 .andDo(print())
                 .andReturn().getResponse();
 
@@ -168,7 +169,7 @@ public class ClientControllerMockTests {
         BDDMockito.willThrow(exp).given(clientService).delete(anyLong());
 
         // when
-        MockHttpServletResponse response = mockMvc.perform(delete("/client/1"))
+        MockHttpServletResponse response = mockMvc.perform(delete(URL + "/1"))
                 .andDo(print())
                 .andReturn().getResponse();
 
@@ -187,7 +188,7 @@ public class ClientControllerMockTests {
         BDDMockito.given(clientService.findWithAccounts(clientId)).willThrow(new ResourceAccessException("Resource Exception"));
 
         // when
-        MockHttpServletResponse response = mockMvc.perform(get("/client/withAccounts/" + clientId))
+        MockHttpServletResponse response = mockMvc.perform(get(URL + "/withAccounts/" + clientId))
                 .andDo(print())
                 .andReturn().getResponse();
 
@@ -203,7 +204,7 @@ public class ClientControllerMockTests {
         BDDMockito.given(clientService.findOne(anyLong())).willThrow(new InvalidDataAccessResourceUsageException("Database is not available"));
 
         // when  
-        MockHttpServletResponse response = mockMvc.perform(get("/client/1"))
+        MockHttpServletResponse response = mockMvc.perform(get(URL + "/1"))
                 .andDo(print())
                 .andReturn().getResponse();
 
